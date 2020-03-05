@@ -1,0 +1,51 @@
+2020-03-03 21:09:41: <class 'TypeError'> -----> getExistingDirectory(parent: QWidget = None, caption: str = '', directory: str = '', options: Union[QFileDialog.Options, QFileDialog.Option] = QFileDialog.ShowDirsOnly): argument 1 has unexpected type 'Ui_MainWindow'
+2020-03-03 21:10:17: <class 'TypeError'> -----> getExistingDirectory(parent: QWidget = None, caption: str = '', directory: str = '', options: Union[QFileDialog.Options, QFileDialog.Option] = QFileDialog.ShowDirsOnly): argument 1 has unexpected type 'Ui_MainWindow'
+2020-03-03 21:12:05: <class 'TypeError'> -----> getExistingDirectory(parent: QWidget = None, caption: str = '', directory: str = '', options: Union[QFileDialog.Options, QFileDialog.Option] = QFileDialog.ShowDirsOnly): argument 1 has unexpected type 'Ui_MainWindow'
+2020-03-03 21:12:07: <class 'TypeError'> -----> getExistingDirectory(parent: QWidget = None, caption: str = '', directory: str = '', options: Union[QFileDialog.Options, QFileDialog.Option] = QFileDialog.ShowDirsOnly): argument 1 has unexpected type 'Ui_MainWindow'
+2020-03-03 21:12:34: <class 'TypeError'> -----> getExistingDirectory(parent: QWidget = None, caption: str = '', directory: str = '', options: Union[QFileDialog.Options, QFileDialog.Option] = QFileDialog.ShowDirsOnly): argument 1 has unexpected type 'str'
+2020-03-03 21:12:36: <class 'TypeError'> -----> getExistingDirectory(parent: QWidget = None, caption: str = '', directory: str = '', options: Union[QFileDialog.Options, QFileDialog.Option] = QFileDialog.ShowDirsOnly): argument 1 has unexpected type 'str'
+2020-03-03 21:13:01: <class 'TypeError'> -----> getExistingDirectory(parent: QWidget = None, caption: str = '', directory: str = '', options: Union[QFileDialog.Options, QFileDialog.Option] = QFileDialog.ShowDirsOnly): argument 1 has unexpected type 'Ui_MainWindow'
+2020-03-03 21:14:00: <class 'TypeError'> -----> getOpenFileName(parent: QWidget = None, caption: str = '', directory: str = '', filter: str = '', initialFilter: str = '', options: Union[QFileDialog.Options, QFileDialog.Option] = 0): argument 1 has unexpected type 'Ui_MainWindow'
+2020-03-03 21:14:58: <class 'TypeError'> -----> getOpenFileName(parent: QWidget = None, caption: str = '', directory: str = '', filter: str = '', initialFilter: str = '', options: Union[QFileDialog.Options, QFileDialog.Option] = 0): argument 1 has unexpected type 'Ui_MainWindow'
+2020-03-03 21:17:17: <class 'TypeError'> -----> getOpenFileName(parent: QWidget = None, caption: str = '', directory: str = '', filter: str = '', initialFilter: str = '', options: Union[QFileDialog.Options, QFileDialog.Option] = 0): argument 1 has unexpected type 'Ui_MainWindow'
+2020-03-03 21:20:48: <class 'TypeError'> -----> setText(self, str): argument 1 has unexpected type 'tuple'
+2020-03-03 21:21:49: <class 'TypeError'> -----> setText(self, str): argument 1 has unexpected type 'tuple'
+2020-03-03 21:41:16: <class 'struct.error'> -----> unpack requires a buffer of 1680 bytes
+2020-03-03 21:46:56: <class 'AttributeError'> -----> type object 'Secondary_Functions' has no attribute 'Secondary_Functions'
+2020-03-03 21:48:15: <class 'AttributeError'> -----> type object 'SSS_Functions' has no attribute 'Secondary_Functions'
+2020-03-03 21:48:25: <class 'AttributeError'> -----> type object 'SSS_Functions' has no attribute 'Secondary_Functions'
+2020-03-03 22:02:57: <class 'ValueError'> -----> invalid literal for int() with base 10: '-----BEGIN PGP MESSAGE-----\n\nhQIMA6Wp4Rh52viEARAAjlzVcipTz08uDZcha6iZDPCp2ePjeFxheL3hzR0WdjTD\nJeWJmtD8vafyzJJwjWLiB2Df+GAHaNibc3rR0XsOpbr3oRb3v9TeVFJVqloZ03bd\nvuQK2wbZ0fYOkZkFrajO3pjIlYuglnrjdjQq
+2020-03-03 22:04:06: <class 'ValueError'> -----> invalid literal for int() with base 10: '-----BEGIN PGP MESSAGE-----\n\nhQIMA6Wp4Rh52viEARAAjlzVcipTz08uDZcha6iZDPCp2ePjeFxheL3hzR0WdjTD\nJeWJmtD8vafyzJJwjWLiB2Df+GAHaNibc3rR0XsOpbr3oRb3v9TeVFJVqloZ03bd\nvuQK2wbZ0fYOkZkFrajO3pjIlYuglnrjdjQq
+2020-03-03 22:04:35: <class 'ValueError'> -----> invalid literal for int() with base 10: '-----BEGIN PGP MESSAGE-----\n\nhQIMA6Wp4Rh52viEARAAjlzVcipTz08uDZcha6iZDPCp2ePjeFxheL3hzR0WdjTD\nJeWJmtD8vafyzJJwjWLiB2Df+GAHaNibc3rR0XsOpbr3oRb3v9TeVFJVqloZ03bd\nvuQK2wbZ0fYOkZkFrajO3pjIlYuglnrjdjQq
+2020-03-03 22:06:42: <class 'TypeError'> -----> main_share_creation() missing 1 required positional argument: 'self'
+2020-03-03 22:07:57: <class 'TypeError'> -----> unsupported operand type(s) for +=: 'int' and 'str'
+2020-03-03 22:08:41: <class 'ValueError'> -----> invalid literal for int() with base 10: 'test'
+2020-03-03 22:12:06: <class 'TypeError'> -----> unsupported operand type(s) for +=: 'int' and 'list'
+2020-03-03 22:13:38: <class 'TypeError'> -----> unsupported operand type(s) for +=: 'int' and 'list'
+2020-03-03 22:15:56: <class 'UnboundLocalError'> -----> local variable 'ascii_string' referenced before assignment
+2020-03-03 22:35:47: <class 'TypeError'> -----> 'bytes' object cannot be interpreted as an integer
+2020-03-03 22:40:00: <class 'LookupError'> -----> 'hex' is not a text encoding; use codecs.encode() to handle arbitrary codecs
+2020-03-03 22:40:17: <class 'LookupError'> -----> 'hex' is not a text encoding; use codecs.encode() to handle arbitrary codecs
+2020-03-03 22:40:50: <class 'LookupError'> -----> 'hex' is not a text encoding; use codecs.encode() to handle arbitrary codecs
+2020-03-03 22:42:36: <class 'LookupError'> -----> 'hex' is not a text encoding; use codecs.encode() to handle arbitrary codecs
+2020-03-03 22:44:50: <class 'TypeError'> -----> a bytes-like object is required, not 'str'
+2020-03-03 22:45:36: <class 'TypeError'> -----> unsupported operand type(s) for +=: 'int' and 'bytes'
+2020-03-03 22:46:03: <class 'ValueError'> -----> invalid literal for int() with base 10: b'74657374206d65'
+2020-03-03 22:48:16: <class 'TypeError'> -----> a bytes-like object is required, not 'str'
+2020-03-03 22:48:23: <class 'TypeError'> -----> a bytes-like object is required, not 'str'
+2020-03-03 22:49:18: <class 'ValueError'> -----> invalid literal for int() with base 10: b'74657374206d65'
+2020-03-03 22:50:28: <class 'NameError'> -----> name 'byte' is not defined
+2020-03-03 22:52:38: <class 'TypeError'> -----> unsupported operand type(s) for +=: 'int' and 'bytes'
+2020-03-03 22:56:43: <class 'TypeError'> -----> from_bytes() missing required argument 'byteorder' (pos 2)
+2020-03-03 22:58:11: <class 'ValueError'> -----> invalid literal for int() with base 16: 'test me'
+2020-03-03 22:59:12: <class 'ValueError'> -----> invalid literal for int() with base 16: '0xtest me'
+2020-03-03 23:00:02: <class 'ValueError'> -----> invalid literal for int() with base 16: 'test me'
+2020-03-03 23:00:39: <class 'UnboundLocalError'> -----> local variable 's' referenced before assignment
+2020-03-03 23:18:51: <class 'TypeError'> -----> ord() expected a character, but string of length 4 found
+2020-03-04 23:19:43: <class 'TypeError'> -----> ord() expected a character, but string of length 4 found
+2020-03-04 23:20:20: <class 'TypeError'> -----> ord() expected a character, but string of length 20 found
+2020-03-04 23:48:47: <class 'TypeError'> -----> '>=' not supported between instances of 'str' and 'int'
+2020-03-04 23:56:19: <class 'TypeError'> -----> can only concatenate str (not "int") to str
+2020-03-04 23:58:25: <class 'NameError'> -----> name 'secret' is not defined
+2020-03-05 00:04:32: <class 'ValueError'> -----> invalid literal for int() with base 10: "\t'1"
+
