@@ -19,14 +19,11 @@ import platform
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QFileDialog
-from PyQt5.Qt import QApplication
 
 import SSS_Functions as sss
 
-import struct
-
-
 version = "0.1"
+
 
 class Fonts():
 
@@ -221,7 +218,8 @@ class Ui_MainWindow(QtWidgets.QWidget):
         @pyqtSlot()
         def OpenLoadFilePicker():
             try:
-                fileName = QFileDialog.getOpenFileName(self, 'Open file', 'c:\\',"Encrypted File (*.asc)")
+                fileName = QFileDialog.getOpenFileName(
+                    self, 'Open file', 'c:\\', "Encrypted File (*.asc)")
                 if fileName:
                     self.load_lineEdit.setText(fileName[0])
 
@@ -233,19 +231,33 @@ class Ui_MainWindow(QtWidgets.QWidget):
         @pyqtSlot()
         def OpenSaveFilePicker():
             try:
+                self.save_lineEdit.setText("")
                 sss.SSS_Functions.main_share_creation(self)
+                self.save_lineEdit.setText(str(sss.SSS_Functions.secret_out))
 
             except Exception as exc:
                 sss.Secondary_Functions.WriteLog(self, exc)
 
+        @pyqtSlot()
+        def TotalSprinBoxChanged():
+            sss.SSS_Functions.total_shares = self.total_shares_spinBox.value()
+
+        @pyqtSlot()
+        def MinSprinBoxChanged():
+            sss.SSS_Functions.min_shares = self.min_shares_spinBox.value()
+
         self.load_Button.clicked.connect(OpenLoadFilePicker)
         self.save_Button.clicked.connect(OpenSaveFilePicker)
+        self.total_shares_spinBox.valueChanged.connect(TotalSprinBoxChanged)
+        self.min_shares_spinBox.valueChanged.connect(MinSprinBoxChanged)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.total_shares_label.setText(_translate("MainWindow", "Total Shares"))
-        self.min_shares_label.setText(_translate("MainWindow", "Minimum Shares"))
+        self.total_shares_label.setText(
+            _translate("MainWindow", "Total Shares"))
+        self.min_shares_label.setText(
+            _translate("MainWindow", "Minimum Shares"))
         self.load_Button.setText(_translate("MainWindow", "Load"))
         self.save_Button.setText(_translate("MainWindow", "Save"))
         self.menuProgram.setTitle(_translate("MainWindow", "Program"))
