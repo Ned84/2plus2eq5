@@ -1,0 +1,21 @@
+# VS Specific
+.vscode
+.vs
+ChangelogRecent.txt
+
+# Unit-test and debug
+__pycache__
+.pytest_cache
+ssslog.txt
+
+# Install Files
+build
+dist
+*.spec
+
+# language files
+*.pro
+*.ts
+
+# Ignore till finished
+install
