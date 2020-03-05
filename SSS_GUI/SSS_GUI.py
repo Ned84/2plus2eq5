@@ -216,14 +216,27 @@ class Ui_MainWindow(QtWidgets.QWidget):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
         @pyqtSlot()
+        def OpenDialogSettings():
+            self.window_settings = QtWidgets.QDialog()
+            self.window_settings.setWindowFlags(
+                self.windowFlags() | QtCore.Qt.CustomizeWindowHint)
+            self.window_settings.setWindowFlags(
+                self.windowFlags() & ~QtCore.Qt.WindowCloseButtonHint)
+            self.window_settings.installEventFilter(self)
+            self.ui = Ui_SettingsDialog()
+            self.ui.setupUi(self.window_settings)
+            self.window_settings.show()
+
+        @pyqtSlot()
         def OpenLoadFilePicker():
             try:
                 fileName = QFileDialog.getOpenFileName(
-                    self, 'Open file', 'c:\\', "Encrypted File (*.asc)")
-                if fileName:
+                    self,
+                    'Open file',
+                    'c:\\',
+                    "Encrypted File, Text File (*.asc *.txt)")
+                if fileName[0]:
                     self.load_lineEdit.setText(fileName[0])
-
-                sss.Secondary_Functions.Read_Encrypted_File(self, fileName[0])
 
             except Exception as exc:
                 sss.Secondary_Functions.WriteLog(self, exc)
@@ -250,6 +263,7 @@ class Ui_MainWindow(QtWidgets.QWidget):
         self.save_Button.clicked.connect(OpenSaveFilePicker)
         self.total_shares_spinBox.valueChanged.connect(TotalSprinBoxChanged)
         self.min_shares_spinBox.valueChanged.connect(MinSprinBoxChanged)
+        self.actionSettings.triggered.connect(OpenDialogSettings)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -266,6 +280,102 @@ class Ui_MainWindow(QtWidgets.QWidget):
         self.actionWikipedia.setText(_translate("MainWindow", "Wikipedia"))
         self.actionUpdate.setText(_translate("MainWindow", "Update"))
         self.actionSettings.setText(_translate("MainWindow", "Settings"))
+
+
+class Ui_SettingsDialog(QtWidgets.QWidget):
+    def setupUi(self, SettingsDialog):
+        SettingsDialog.setObjectName("SettingsDialog")
+        SettingsDialog.resize(400, 300)
+        SettingsDialog.setMinimumSize(QtCore.QSize(400, 300))
+        SettingsDialog.setMaximumSize(QtCore.QSize(400, 300))
+        _translate = QtCore.QCoreApplication.translate
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(
+            ":/resources/OnionSwitch_Logo.png"),
+            QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        SettingsDialog.setWindowIcon(icon)
+        font = Fonts.Choose_Fonts(self, False, 10, "Arial")
+        self.cancel_Button = QtWidgets.QPushButton(SettingsDialog)
+        self.cancel_Button.setGeometry(QtCore.QRect(300, 260, 90, 28))
+        self.cancel_Button.setObjectName("cancel_Button")
+        self.ok_Button = QtWidgets.QPushButton(SettingsDialog)
+        self.ok_Button.setGeometry(QtCore.QRect(200, 260, 90, 28))
+        self.ok_Button.setObjectName("ok_Button")
+        self.main_listWidget = QtWidgets.QListWidget(SettingsDialog)
+        self.main_listWidget.setGeometry(QtCore.QRect(0, 0, 150, 300))
+        self.main_listWidget.setObjectName("main_listview")
+        self.main_listWidget.setFont(font)
+        self.main_listWidget.addItem(_translate(
+            "SettingsDialog", "General"))
+        self.main_listWidget.setStyleSheet(
+            "background-color: qlineargradient("
+            "spread:pad, x1:1, y1:1, x2:0, y2:0, stop:0 rgb("
+            "0, 0, 0), stop:1 rgb(60, 60, 60));")
+        self.main_listWidget.item(0).setForeground(QtCore.Qt.white)
+
+        self.general_groupbox = QtWidgets.QGroupBox(SettingsDialog)
+        self.general_groupbox.setGeometry(QtCore.QRect(150, 0, 250, 300))
+        self.general_groupbox.setObjectName("general_groupbox")
+        self.general_groupbox.setStyleSheet(
+            "QGroupBox#general_groupbox {background-color: qlineargradient("
+            "spread:pad, x1:1, y1:0, x2:, y2:1, stop:0 rgb("
+            "60, 60, 60), stop:1 rgb(60,60,60))};")
+        self.general_groupbox.setObjectName("general_groupbox")
+        self.choose_mersenne_prime_groupbox = QtWidgets.QGroupBox(
+            self.general_groupbox)
+        self.choose_mersenne_prime_groupbox.setObjectName(
+            "choose_mersenne_prime_groupbox")
+        self.choose_mersenne_prime_groupbox.setGeometry(0, 0, 250, 110)
+        self.choose_mersenne_Label = QtWidgets.QLabel(
+            self.choose_mersenne_prime_groupbox)
+        self.choose_mersenne_Label.setGeometry(QtCore.QRect(10, 10, 171, 21))
+        self.choose_mersenne_Label.setFont(font)
+        self.choose_mersenne_Label.setObjectName("choose_mersenne_Label")
+        self.choose_mersenne_Label.setStyleSheet("color:white")
+        self.mersenne_comboBox = QtWidgets.QComboBox(
+            self.choose_mersenne_prime_groupbox)
+        self.mersenne_comboBox.setObjectName("mersenne_comboBox")
+        self.mersenne_comboBox.setGeometry(QtCore.QRect(12, 40, 230, 22))
+        self.mersenne_comboBox.addItem("Default")
+
+        for number in sss.SSS_Functions.prime_array:
+            self.mersenne_comboBox.addItem(str(number))
+
+
+        self.language_groupbox = QtWidgets.QGroupBox(self.general_groupbox)
+        self.language_groupbox.setObjectName("language_groupbox")
+        self.language_groupbox.setGeometry(0, 105, 250, 80)
+        self.language_Label = QtWidgets.QLabel(self.language_groupbox)
+        self.language_Label.setObjectName("language_Label")
+        self.language_Label.setGeometry(QtCore.QRect(12, 10, 100, 21))
+        self.language_Label.setFont(font)
+        self.language_Label.setStyleSheet("color: white")
+        self.language_comboBox = QtWidgets.QComboBox(self.language_groupbox)
+        self.language_comboBox.setObjectName("language_comboBox")
+        self.language_comboBox.setGeometry(QtCore.QRect(12, 40, 230, 22))
+
+        self.ok_Button.raise_()
+        self.cancel_Button.raise_()
+
+        self.retranslateUi(SettingsDialog)
+        QtCore.QMetaObject.connectSlotsByName(SettingsDialog)
+
+
+        self.cancel_Button.clicked.connect(SettingsDialog.close)
+        
+
+    def retranslateUi(self, SettingsDialog):
+        _translate = QtCore.QCoreApplication.translate
+        SettingsDialog.setWindowTitle(_translate(
+            "SettingsDialog", "Settings"))
+        self.ok_Button.setText(_translate("SettingsDialog", "OK"))
+        self.cancel_Button.setText(_translate("SettingsDialog", "Cancel"))
+        self.language_Label.setText(_translate(
+            "SettingsDialog", "Language:"))
+        self.choose_mersenne_Label.setText(_translate(
+            "SettingsDialog", "Prime Encryption:"))
+
+
 
 
 if __name__ == "__main__":
