@@ -341,7 +341,6 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
         for number in sss.SSS_Functions.prime_array:
             self.mersenne_comboBox.addItem(str(number))
 
-
         self.language_groupbox = QtWidgets.QGroupBox(self.general_groupbox)
         self.language_groupbox.setObjectName("language_groupbox")
         self.language_groupbox.setGeometry(0, 105, 250, 80)
@@ -360,9 +359,7 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
         self.retranslateUi(SettingsDialog)
         QtCore.QMetaObject.connectSlotsByName(SettingsDialog)
 
-
         self.cancel_Button.clicked.connect(SettingsDialog.close)
-        
 
     def retranslateUi(self, SettingsDialog):
         _translate = QtCore.QCoreApplication.translate
@@ -374,8 +371,6 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
             "SettingsDialog", "Language:"))
         self.choose_mersenne_Label.setText(_translate(
             "SettingsDialog", "Prime Encryption:"))
-
-
 
 
 if __name__ == "__main__":
