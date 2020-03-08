@@ -14,15 +14,18 @@ import random
 import functools
 import datetime
 import sys
+import shutil
+import os
 
 
 class SSS_Functions(object):
 
-    secret = ""
-    total_shares = 0
-    min_shares = 0
+    total_shares = 2
+    min_shares = 2
     secret_out = ""
     prime = 0
+    security_lvl = 0
+    test = []
 
     prime_array = [2,
                    3,
@@ -151,9 +154,9 @@ class SSS_Functions(object):
         x_s, y_s = zip(*shares)
         return SSS_Functions._lagrange_interpolate(self, 0, x_s, y_s, prime)
 
-    def main_share_creation(self):
+    def Share_Creation(self, file):
         secret_string = "|"
-        secret_string += SSS_Functions.secret
+        secret_string += file
 
         string = ""
 
@@ -172,12 +175,12 @@ class SSS_Functions(object):
         for number in SSS_Functions.prime_array:
             if secret_int.bit_length() < number:
                 if number < 521:
-                    SSS_Functions.prime = 521
-                    SSS_Functions.prime = 2 ** SSS_Functions.prime - 1
+                    SSS_Functions.security_lvl = 521
+                    SSS_Functions.prime = 2 ** SSS_Functions.security_lvl - 1
                     break
                 else:
-                    SSS_Functions.prime = number
-                    SSS_Functions.prime = 2 ** SSS_Functions.prime - 1
+                    SSS_Functions.security_lvl = number
+                    SSS_Functions.prime = 2 ** SSS_Functions.security_lvl - 1
                     break
 
         secret, shares = SSS_Functions.create_shares(
@@ -193,25 +196,116 @@ class SSS_Functions(object):
             for share in shares:
                 print('  ', share)
 
+        SSS_Functions.test = shares
+
         SSS_Functions.secret_out = SSS_Functions.recover_secret(
             self, shares[:SSS_Functions.min_shares], prime=SSS_Functions.prime)
+        print(SSS_Functions.secret_out)
+        SSS_Functions.secret_out = SSS_Functions.recover_secret(
+            self, shares[(SSS_Functions.min_shares * -1):], prime=SSS_Functions.prime)
+        print(SSS_Functions.secret_out)
         print("Secret:\t\t\t" + str(SSS_Functions.secret_out))
+
+
+        return shares
+        
+    def Share_Combining(self, sec_lvl, minimum, shares, folder):
+        try:
+            prep_list = [(i + 7, int(shares[i]))
+                  for i in range(0, len(shares))]
+
+            # new_shares = []
+            # for share in shares:
+            #     new_shares[i][0] = i
+            #     new_shares[i][1] = shares[i]
+            #     i += 1
+
+            prime = 2 ** int(sec_lvl) - 1
+            secret = SSS_Functions.recover_secret(
+                self, prep_list[:int(minimum)], prime=prime)
+           
+
+            i = 1
+            secret_string = ""
+            secret_ascii = ""
+            for char in str(secret):
+                secret_ascii += char
+                
+                if i >= 3:
+                    secret_string += chr(int(secret_ascii))
+                    secret_ascii = ""
+                    i = 0
+                i += 1
+
+            file = folder + "/Combined_Shares.txt"
+            with open(file, "w") as stream:
+                stream.write(secret_string)
+
+            pass
+
+        except Exception as exc:
+            Secondary_Functions.WriteLog(self, exc)
+
+        # print('Secret:                                                     ',
+        #       secret)
+        # print('Shares:')
+        # if shares:
+        #     for share in shares:
+        #         print('  ', share)
+
+        # SSS_Functions.secret_out = SSS_Functions.recover_secret(
+        #     self, shares[:SSS_Functions.min_shares], prime=SSS_Functions.prime)
+        # print("Secret:\t\t\t" + str(SSS_Functions.secret_out))
 
 
 class Secondary_Functions(object):
     path_to_log = ""
     path_separator = ""
 
-    paramplatform = ""
+    platform = ""
+    share_fileNames = []
 
     def Read_Encrypted_File(self, file):
         try:
             with open(file) as stream:
                 content = stream.read()
-                content = int(content)
-                pass
+            return content
         except Exception as exc:
             Secondary_Functions.WriteLog(self, exc)
+
+    def Save_Shares(self, folder, shares, sec_lvl, minimum, total):
+        try:
+            path = folder + "/Shares"
+            overview_text = "Security Level:\t" + str(sec_lvl) + "\n" +\
+                            "Minimum Shares:\t" + str(minimum) + "\n" +\
+                            "Total Shares:\t" + str(total)
+            if not os.path.exists(path):
+                os.makedirs(path)
+            else:
+                shutil.rmtree(path)
+                os.makedirs(path)
+            i = 1
+            for share in shares:
+                file = path + "/Share_" + str(i) + ".share"
+                with open(file, "w") as stream:
+                    stream.write(str(share[1]))
+                i += 1
+
+            file = path + "/Overview" + ".txt"
+            with open(file, "w") as stream:
+                stream.write(overview_text)
+        except Exception as exc:
+            Secondary_Functions.WriteLog(self, exc)
+
+    def Load_Shares(self, files):
+        shares_list = []
+        
+        i = 0
+
+        for file in files[0]:
+            with open(file, "r") as stream:
+                shares_list.append(stream.read())
+        return shares_list
 
     def WriteLog(self, exc):
         # Function to write passed in Exceptions

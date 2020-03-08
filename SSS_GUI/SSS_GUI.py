@@ -156,35 +156,105 @@ class Ui_MainWindow(QtWidgets.QWidget):
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(500, 300)
-        MainWindow.setMinimumSize(QtCore.QSize(500, 300))
-        MainWindow.setMaximumSize(QtCore.QSize(500, 300))
+        MainWindow.resize(350, 300)
+        # MainWindow.setMinimumSize(QtCore.QSize(500, 300))
+        # MainWindow.setMaximumSize(QtCore.QSize(500, 300))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        self.total_shares_spinBox = QtWidgets.QSpinBox(self.centralwidget)
-        self.total_shares_spinBox.setGeometry(QtCore.QRect(10, 60, 42, 22))
+
+        self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
+        self.tabWidget.setGeometry(QtCore.QRect(0, 0, 350, 500))
+        self.tabWidget.setTabPosition(QtWidgets.QTabWidget.North)
+        self.tabWidget.setTabShape(QtWidgets.QTabWidget.Rounded)
+        self.tabWidget.setIconSize(QtCore.QSize(20, 20))
+        self.tabWidget.setObjectName("tabWidget")
+        if sss.Secondary_Functions.platform == "Windows":
+            font = "10pt Arial"
+        else:
+            font = "12pt Arial"
+        stylesheet = """
+        QTabBar::tab:selected {color: white;}
+        QTabBar::tab { height: 30px; width: 175px;
+        background-color: qlineargradient(spread:pad, x1:1, y1:0, x2:, y2:1,
+        stop:0 rgb(139,99,157), stop:1 rgb(39,0,57));
+        font: """ + font + """;
+        color : qlineargradient(spread:pad, x1:1, y1:0, x2:, y2:1,
+        stop:0 rgb(100,100,100), stop:1 rgb(200,200,200));
+        selection-background-color: rgb(255, 255, 255);}
+        """
+        self.tabWidget.setStyleSheet(stylesheet)
+        self.create_tab = QtWidgets.QWidget()
+        self.create_tab.setObjectName("create_tab")
+        self.create_tab.setStyleSheet("QWidget#create_tab {background-color: "
+                                "qlineargradient(spread:pad, x1:1, y1:0, x2:,"
+                                "y2:1, stop:0 rgb("
+                                "200,200,200), stop:1 rgb(253,253,253));}")
+        self.tabWidget.addTab(self.create_tab, "")
+
+        self.combine_tab = QtWidgets.QWidget()
+        self.combine_tab.setObjectName("combine_tab")
+        self.combine_tab.setStyleSheet(
+            "QWidget#combine_tab {background-color: qlineargradient("
+            "spread:pad, x1:1, y1:0, x2:, y2:1, stop:0 rgb("
+            "200,200,200), stop:1 rgb(253,253,253));}")
+        self.tabWidget.addTab(self.combine_tab, "")
+        self.total_shares_spinBox = QtWidgets.QSpinBox(self.create_tab)
+        self.total_shares_spinBox.setGeometry(QtCore.QRect(150, 30, 42, 22))
         self.total_shares_spinBox.setObjectName("total_shares_spinBox")
         self.min_shares_spinBox = QtWidgets.QSpinBox(self.centralwidget)
-        self.min_shares_spinBox.setGeometry(QtCore.QRect(120, 60, 42, 22))
+        self.min_shares_spinBox.setGeometry(QtCore.QRect(10, 60, 42, 22))
         self.min_shares_spinBox.setObjectName("min_shares_spinBox")
-        self.total_shares_label = QtWidgets.QLabel(self.centralwidget)
-        self.total_shares_label.setGeometry(QtCore.QRect(10, 30, 81, 16))
+        self.total_shares_label = QtWidgets.QLabel(self.create_tab)
+        self.total_shares_label.setGeometry(QtCore.QRect(150, 10, 110, 16))
         self.total_shares_label.setObjectName("total_shares_label")
+        self.total_shares_label.setFont(Fonts.Choose_Fonts(self, False, 10, "Arial"))
         self.min_shares_label = QtWidgets.QLabel(self.centralwidget)
-        self.min_shares_label.setGeometry(QtCore.QRect(120, 30, 101, 16))
+        self.min_shares_label.setGeometry(QtCore.QRect(10, 40, 125, 16)) 
         self.min_shares_label.setObjectName("min_shares_label")
-        self.load_lineEdit = QtWidgets.QLineEdit(self.centralwidget)
+        self.min_shares_label.setFont(Fonts.Choose_Fonts(self, False, 10, "Arial"))
+        self.load_lineEdit = QtWidgets.QLineEdit(self.create_tab)
         self.load_lineEdit.setGeometry(QtCore.QRect(10, 150, 211, 22))
-        self.load_lineEdit.setObjectName("lineEdit")
-        self.save_lineEdit = QtWidgets.QLineEdit(self.centralwidget)
-        self.save_lineEdit.setGeometry(QtCore.QRect(250, 150, 211, 22))
-        self.save_lineEdit.setObjectName("lineEdit_2")
-        self.load_Button = QtWidgets.QPushButton(self.centralwidget)
+        self.load_lineEdit.setObjectName("load_lineEdit")
+        self.load_Button = QtWidgets.QPushButton(self.create_tab)
         self.load_Button.setGeometry(QtCore.QRect(130, 180, 93, 28))
         self.load_Button.setObjectName("load_Button")
-        self.save_Button = QtWidgets.QPushButton(self.centralwidget)
-        self.save_Button.setGeometry(QtCore.QRect(370, 180, 93, 28))
+        self.save_lineEdit = QtWidgets.QLineEdit(self.combine_tab)
+        self.save_lineEdit.setGeometry(QtCore.QRect(10, 150, 211, 22))
+        self.save_lineEdit.setObjectName("save_lineEdit")
+        self.save_Button = QtWidgets.QPushButton(self.combine_tab)
+        self.save_Button.setGeometry(QtCore.QRect(130, 180, 93, 28))
         self.save_Button.setObjectName("save_Button")
+        self.combine_start_Button = QtWidgets.QPushButton(self.combine_tab)
+        self.combine_start_Button.setGeometry(QtCore.QRect(240, 180, 93, 28))
+        self.combine_start_Button.setObjectName("combine_start_Button")
+        self.create_start_Button = QtWidgets.QPushButton(self.create_tab)
+        self.create_start_Button.setGeometry(QtCore.QRect(240, 180, 93, 28))
+        self.create_start_Button.setObjectName("create_start_Button")
+        self.choose_mersenne_Label = QtWidgets.QLabel(
+            self.create_tab)
+        self.choose_mersenne_Label.setGeometry(QtCore.QRect(10, 60, 171, 21))
+        self.choose_mersenne_Label.setFont(Fonts.Choose_Fonts(self, False, 10, "Arial"))
+        self.choose_mersenne_Label.setObjectName("choose_mersenne_Label")
+        self.mersenne_comboBox = QtWidgets.QComboBox(
+            self.create_tab)
+        self.mersenne_comboBox.setObjectName("mersenne_comboBox")
+        self.mersenne_comboBox.setGeometry(QtCore.QRect(10, 80, 230, 22))
+        self.mersenne_comboBox.addItem("Default")
+        for number in sss.SSS_Functions.prime_array:
+            self.mersenne_comboBox.addItem(str(number))
+
+        self.combine_mersenne_Label = QtWidgets.QLabel(
+            self.combine_tab)
+        self.combine_mersenne_Label.setGeometry(QtCore.QRect(10, 60, 171, 21))
+        self.combine_mersenne_Label.setFont(Fonts.Choose_Fonts(self, False, 10, "Arial"))
+        self.combine_mersenne_Label.setObjectName("combine_mersenne_Label")
+        self.combine_mersenne_comboBox = QtWidgets.QComboBox(
+            self.combine_tab)
+        self.combine_mersenne_comboBox.setObjectName("combine_mersenne_comboBox")
+        self.combine_mersenne_comboBox.setGeometry(QtCore.QRect(10, 80, 230, 22))
+        for number in sss.SSS_Functions.prime_array:
+            self.combine_mersenne_comboBox.addItem(str(number))
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 500, 26))
@@ -213,7 +283,14 @@ class Ui_MainWindow(QtWidgets.QWidget):
         self.menubar.addAction(self.menuHelp.menuAction())
 
         self.retranslateUi(MainWindow)
+        self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+        self.tabWidget.setCurrentWidget(self.tabWidget.findChild(
+            QtWidgets.QWidget, "create_tab"))
+
+        self.total_shares_spinBox.setValue(sss.SSS_Functions.total_shares)
+        self.min_shares_spinBox.setValue(sss.SSS_Functions.min_shares)
 
         @pyqtSlot()
         def OpenDialogSettings():
@@ -244,10 +321,59 @@ class Ui_MainWindow(QtWidgets.QWidget):
         @pyqtSlot()
         def OpenSaveFilePicker():
             try:
-                self.save_lineEdit.setText("")
-                sss.SSS_Functions.main_share_creation(self)
-                self.save_lineEdit.setText(str(sss.SSS_Functions.secret_out))
+                chosen_filenames = ""
+                sss.Secondary_Functions.share_fileNames = []
+                fileNames = QFileDialog.getOpenFileNames(
+                    self,
+                    'Save File',
+                    'c:\\',
+                    "Share Files (*.share)")
 
+                sss.Secondary_Functions.share_fileNames = fileNames
+                if fileNames[0]:
+                    for name in fileNames[0]:
+                        chosen_filenames += name + " "
+                    self.save_lineEdit.setText(chosen_filenames)
+
+            except Exception as exc:
+                sss.Secondary_Functions.WriteLog(self, exc)
+
+        @pyqtSlot()
+        def Start_Creating_Shares():
+            try:
+
+                if(self.load_lineEdit.text() != ""):
+                    file = sss.Secondary_Functions.Read_Encrypted_File(
+                        self, self.load_lineEdit.text())
+                    shares = sss.SSS_Functions.Share_Creation(self, file)
+                    path = self.load_lineEdit.text()
+                    path = path[:path.rfind('/')]
+                    sss.Secondary_Functions.Save_Shares(
+                        self,
+                        path,
+                        shares,
+                        sss.SSS_Functions.security_lvl,
+                        self.min_shares_spinBox.value(),
+                        self.total_shares_spinBox.value())
+
+            except Exception as exc:
+                sss.Secondary_Functions.WriteLog(self, exc)
+
+        @pyqtSlot()
+        def Start_Combining_Shares():
+            try:
+                shares = sss.Secondary_Functions.Load_Shares(
+                    self,
+                    sss.Secondary_Functions.share_fileNames)
+
+                path = sss.Secondary_Functions.share_fileNames[0][0]
+                path = str(path)
+                path = path[:path.rfind('/')]
+
+                sss.SSS_Functions.Share_Combining(
+                    self, self.combine_mersenne_comboBox.currentText(),
+                    self.min_shares_spinBox.value(),
+                    shares, path)
             except Exception as exc:
                 sss.Secondary_Functions.WriteLog(self, exc)
 
@@ -260,10 +386,12 @@ class Ui_MainWindow(QtWidgets.QWidget):
             sss.SSS_Functions.min_shares = self.min_shares_spinBox.value()
 
         self.load_Button.clicked.connect(OpenLoadFilePicker)
-        self.save_Button.clicked.connect(OpenSaveFilePicker)
+        self.create_start_Button.clicked.connect(Start_Creating_Shares)
         self.total_shares_spinBox.valueChanged.connect(TotalSprinBoxChanged)
         self.min_shares_spinBox.valueChanged.connect(MinSprinBoxChanged)
         self.actionSettings.triggered.connect(OpenDialogSettings)
+        self.save_Button.clicked.connect(OpenSaveFilePicker)
+        self.combine_start_Button.clicked.connect(Start_Combining_Shares)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -274,12 +402,22 @@ class Ui_MainWindow(QtWidgets.QWidget):
             _translate("MainWindow", "Minimum Shares"))
         self.load_Button.setText(_translate("MainWindow", "Load"))
         self.save_Button.setText(_translate("MainWindow", "Save"))
+        self.create_start_Button.setText(_translate("MainWindow", "Start"))
+        self.combine_start_Button.setText(_translate("MainWindow", "Start"))
         self.menuProgram.setTitle(_translate("MainWindow", "Program"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
         self.actionAbout.setText(_translate("MainWindow", "About"))
         self.actionWikipedia.setText(_translate("MainWindow", "Wikipedia"))
         self.actionUpdate.setText(_translate("MainWindow", "Update"))
         self.actionSettings.setText(_translate("MainWindow", "Settings"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(
+            self.create_tab), _translate("MainWindow", "Create"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(
+            self.combine_tab), _translate("MainWindow", "Combine"))
+        self.choose_mersenne_Label.setText(_translate(
+            "SettingsDialog", "Encryption Level:"))
+        self.combine_mersenne_Label.setText(_translate(
+            "SettingsDialog", "Encryption Level:"))
 
 
 class Ui_SettingsDialog(QtWidgets.QWidget):
