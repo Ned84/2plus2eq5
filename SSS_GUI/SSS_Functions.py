@@ -189,29 +189,14 @@ class SSS_Functions(object):
             secret=secret_int,
             prime=SSS_Functions.prime)
 
-        print('Secret:                                                     ',
-              secret)
-        print('Shares:')
-        if shares:
-            for share in shares:
-                print('  ', share)
-
-        SSS_Functions.test = shares
-
-        SSS_Functions.secret_out = SSS_Functions.recover_secret(
-            self, shares[:SSS_Functions.min_shares], prime=SSS_Functions.prime)
-        print(SSS_Functions.secret_out)
-        SSS_Functions.secret_out = SSS_Functions.recover_secret(
-            self, shares[(SSS_Functions.min_shares * -1):], prime=SSS_Functions.prime)
-        print(SSS_Functions.secret_out)
-        print("Secret:\t\t\t" + str(SSS_Functions.secret_out))
+        
 
 
         return shares
         
     def Share_Combining(self, sec_lvl, minimum, shares, folder):
         try:
-            prep_list = [(i + 7, int(shares[i]))
+            prep_list = [(int(shares[i][:3]), int(shares[i][3:]))
                   for i in range(0, len(shares))]
 
             # new_shares = []
@@ -239,7 +224,7 @@ class SSS_Functions(object):
 
             file = folder + "/Combined_Shares.txt"
             with open(file, "w") as stream:
-                stream.write(secret_string)
+                stream.write(secret_string[1:])
 
             pass
 
@@ -285,10 +270,16 @@ class Secondary_Functions(object):
                 shutil.rmtree(path)
                 os.makedirs(path)
             i = 1
+            
             for share in shares:
                 file = path + "/Share_" + str(i) + ".share"
                 with open(file, "w") as stream:
-                    stream.write(str(share[1]))
+                    if i <= 9:
+                        stream.write("00" + str(i) + (hex(share[1])[2:]))
+                    elif i <= 99:
+                        stream.write("0" + str(i) + (hex(share[1])[2:]))
+                    else:
+                        stream.write(str(i) + (hex(share[1])[2:]))
                 i += 1
 
             file = path + "/Overview" + ".txt"
@@ -300,11 +291,16 @@ class Secondary_Functions(object):
     def Load_Shares(self, files):
         shares_list = []
         
-        i = 0
+        stream_line = ""
+        stream_int = ""
 
         for file in files[0]:
             with open(file, "r") as stream:
-                shares_list.append(stream.read())
+                stream_line = stream.read()
+                stream_int = int(stream_line[3:], 16)
+                stream_line = stream_line[:3] + str(stream_int)
+                #stream_line = stream_line[0] + str(int(stream_line, 16))
+                shares_list.append(stream_line)
         return shares_list
 
     def WriteLog(self, exc):
