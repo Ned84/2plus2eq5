@@ -345,7 +345,7 @@ class Ui_MainWindow(QtWidgets.QWidget):
                 if(self.load_lineEdit.text() != ""):
                     file = sss.Secondary_Functions.Read_Encrypted_File(
                         self, self.load_lineEdit.text())
-                    shares = sss.SSS_Functions.Share_Creation(self, file)
+                    shares = sss.SSS_Functions.Share_Creation(self, file, self.mersenne_comboBox.currentText())
                     path = self.load_lineEdit.text()
                     path = path[:path.rfind('/')]
                     sss.Secondary_Functions.Save_Shares(

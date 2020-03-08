@@ -25,7 +25,6 @@ class SSS_Functions(object):
     secret_out = ""
     prime = 0
     security_lvl = 0
-    test = []
 
     prime_array = [2,
                    3,
@@ -154,7 +153,7 @@ class SSS_Functions(object):
         x_s, y_s = zip(*shares)
         return SSS_Functions._lagrange_interpolate(self, 0, x_s, y_s, prime)
 
-    def Share_Creation(self, file):
+    def Share_Creation(self, file, chosen_sec_lvl):
         secret_string = "|"
         secret_string += file
 
@@ -174,14 +173,19 @@ class SSS_Functions(object):
 
         for number in SSS_Functions.prime_array:
             if secret_int.bit_length() < number:
-                if number < 521:
-                    SSS_Functions.security_lvl = 521
+                if number < 127:
+                    SSS_Functions.security_lvl = 127
                     SSS_Functions.prime = 2 ** SSS_Functions.security_lvl - 1
                     break
                 else:
                     SSS_Functions.security_lvl = number
                     SSS_Functions.prime = 2 ** SSS_Functions.security_lvl - 1
                     break
+
+        if chosen_sec_lvl != "Default":
+            if int(chosen_sec_lvl) > SSS_Functions.security_lvl:
+                SSS_Functions.security_lvl = int(chosen_sec_lvl)
+                SSS_Functions.prime = 2 ** SSS_Functions.security_lvl - 1
 
         secret, shares = SSS_Functions.create_shares(
             self, minimum=SSS_Functions.min_shares,
