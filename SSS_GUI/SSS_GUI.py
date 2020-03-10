@@ -20,7 +20,10 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QFileDialog
 
+
 import SSS_Functions as sss
+import subprocess
+import os
 
 version = "0.1"
 
@@ -50,7 +53,7 @@ class Fonts():
         return font
 
 
-class Ui_MainWindow(QtWidgets.QWidget):
+class Ui_MainWindow(QtWidgets.QMainWindow):
 
     serverconnection = False
     versionnew = ""
@@ -157,11 +160,10 @@ class Ui_MainWindow(QtWidgets.QWidget):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(350, 300)
-        # MainWindow.setMinimumSize(QtCore.QSize(500, 300))
-        # MainWindow.setMaximumSize(QtCore.QSize(500, 300))
+        MainWindow.setMinimumSize(QtCore.QSize(350, 300))
+        MainWindow.setMaximumSize(QtCore.QSize(350, 300))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
         self.tabWidget.setGeometry(QtCore.QRect(0, 0, 350, 500))
         self.tabWidget.setTabPosition(QtWidgets.QTabWidget.North)
@@ -176,10 +178,10 @@ class Ui_MainWindow(QtWidgets.QWidget):
         QTabBar::tab:selected {color: white;}
         QTabBar::tab { height: 30px; width: 175px;
         background-color: qlineargradient(spread:pad, x1:1, y1:0, x2:, y2:1,
-        stop:0 rgb(139,99,157), stop:1 rgb(39,0,57));
+        stop:0 rgb(0,200,0), stop:1 rgb(0,250,0));
         font: """ + font + """;
         color : qlineargradient(spread:pad, x1:1, y1:0, x2:, y2:1,
-        stop:0 rgb(100,100,100), stop:1 rgb(200,200,200));
+        stop:0 rgb(50,50,50), stop:1 rgb(150,150,150));
         selection-background-color: rgb(255, 255, 255);}
         """
         self.tabWidget.setStyleSheet(stylesheet)
@@ -215,12 +217,14 @@ class Ui_MainWindow(QtWidgets.QWidget):
         self.load_lineEdit = QtWidgets.QLineEdit(self.create_tab)
         self.load_lineEdit.setGeometry(QtCore.QRect(10, 150, 211, 22))
         self.load_lineEdit.setObjectName("load_lineEdit")
+        self.load_lineEdit.setReadOnly(True)
         self.load_Button = QtWidgets.QPushButton(self.create_tab)
         self.load_Button.setGeometry(QtCore.QRect(130, 180, 93, 28))
         self.load_Button.setObjectName("load_Button")
         self.save_lineEdit = QtWidgets.QLineEdit(self.combine_tab)
         self.save_lineEdit.setGeometry(QtCore.QRect(10, 150, 211, 22))
         self.save_lineEdit.setObjectName("save_lineEdit")
+        self.save_lineEdit.setReadOnly(True)
         self.save_Button = QtWidgets.QPushButton(self.combine_tab)
         self.save_Button.setGeometry(QtCore.QRect(130, 180, 93, 28))
         self.save_Button.setObjectName("save_Button")
@@ -322,15 +326,16 @@ class Ui_MainWindow(QtWidgets.QWidget):
         def OpenSaveFilePicker():
             try:
                 chosen_filenames = ""
-                sss.Secondary_Functions.share_fileNames = []
+                
                 fileNames = QFileDialog.getOpenFileNames(
                     self,
-                    'Save File',
+                    'Save Files',
                     'c:\\',
                     "Share Files (*.share)")
 
-                sss.Secondary_Functions.share_fileNames = fileNames
+                
                 if fileNames[0]:
+                    sss.Secondary_Functions.share_fileNames = fileNames
                     for name in fileNames[0]:
                         chosen_filenames += name + " "
                     self.save_lineEdit.setText(chosen_filenames)
@@ -374,6 +379,8 @@ class Ui_MainWindow(QtWidgets.QWidget):
                     self, self.combine_mersenne_comboBox.currentText(),
                     self.min_shares_spinBox.value(),
                     shares, path)
+                
+                os.startfile(path)
             except Exception as exc:
                 sss.Secondary_Functions.WriteLog(self, exc)
 
@@ -401,7 +408,7 @@ class Ui_MainWindow(QtWidgets.QWidget):
         self.min_shares_label.setText(
             _translate("MainWindow", "Minimum Shares"))
         self.load_Button.setText(_translate("MainWindow", "Load"))
-        self.save_Button.setText(_translate("MainWindow", "Save"))
+        self.save_Button.setText(_translate("MainWindow", "Load"))
         self.create_start_Button.setText(_translate("MainWindow", "Start"))
         self.combine_start_Button.setText(_translate("MainWindow", "Start"))
         self.menuProgram.setTitle(_translate("MainWindow", "Program"))
@@ -521,3 +528,4 @@ if __name__ == "__main__":
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
+

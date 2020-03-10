@@ -26,18 +26,7 @@ class SSS_Functions(object):
     prime = 0
     security_lvl = 0
 
-    prime_array = [2,
-                   3,
-                   5,
-                   7,
-                   13,
-                   17,
-                   19,
-                   31,
-                   61,
-                   89,
-                   107,
-                   127,
+    prime_array = [127,
                    521,
                    607,
                    1279,
@@ -226,7 +215,12 @@ class SSS_Functions(object):
                     i = 0
                 i += 1
 
-            file = folder + "/Combined_Shares.txt"
+            if "BEGIN PGP MESSAGE" in secret_string[:25]:
+                file = folder + "/Combined_Shares.txt.asc"
+            else:
+                file = folder + "/Combined_Shares.txt"
+
+            
             with open(file, "w") as stream:
                 stream.write(secret_string[1:])
 
