@@ -22,7 +22,7 @@ from PyQt5.QtWidgets import QFileDialog
 
 
 import SSS_Functions as sss
-import subprocess
+import SSS_Resources
 import os
 
 version = "0.1"
@@ -162,6 +162,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         MainWindow.resize(350, 300)
         MainWindow.setMinimumSize(QtCore.QSize(350, 300))
         MainWindow.setMaximumSize(QtCore.QSize(350, 300))
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/Logo/SSS_Logo.png"),
+                       QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        MainWindow.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
@@ -171,12 +175,12 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.tabWidget.setIconSize(QtCore.QSize(20, 20))
         self.tabWidget.setObjectName("tabWidget")
         if sss.Secondary_Functions.platform == "Windows":
-            font = "10pt Arial"
+            font = "8pt Arial"
         else:
-            font = "12pt Arial"
+            font = "10pt Arial"
         stylesheet = """
         QTabBar::tab:selected {color: white;}
-        QTabBar::tab { height: 30px; width: 175px;
+        QTabBar::tab { height: 25px; width: 175px;
         background-color: qlineargradient(spread:pad, x1:1, y1:0, x2:, y2:1,
         stop:0 rgb(0,200,0), stop:1 rgb(0,250,0));
         font: """ + font + """;
@@ -204,14 +208,14 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.total_shares_spinBox.setGeometry(QtCore.QRect(150, 30, 42, 22))
         self.total_shares_spinBox.setObjectName("total_shares_spinBox")
         self.min_shares_spinBox = QtWidgets.QSpinBox(self.centralwidget)
-        self.min_shares_spinBox.setGeometry(QtCore.QRect(10, 60, 42, 22))
+        self.min_shares_spinBox.setGeometry(QtCore.QRect(10, 55, 42, 22))
         self.min_shares_spinBox.setObjectName("min_shares_spinBox")
         self.total_shares_label = QtWidgets.QLabel(self.create_tab)
         self.total_shares_label.setGeometry(QtCore.QRect(150, 10, 110, 16))
         self.total_shares_label.setObjectName("total_shares_label")
         self.total_shares_label.setFont(Fonts.Choose_Fonts(self, False, 10, "Arial"))
         self.min_shares_label = QtWidgets.QLabel(self.centralwidget)
-        self.min_shares_label.setGeometry(QtCore.QRect(10, 40, 125, 16)) 
+        self.min_shares_label.setGeometry(QtCore.QRect(10, 35, 125, 16)) 
         self.min_shares_label.setObjectName("min_shares_label")
         self.min_shares_label.setFont(Fonts.Choose_Fonts(self, False, 10, "Arial"))
         self.load_lineEdit = QtWidgets.QLineEdit(self.create_tab)
@@ -286,6 +290,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.menubar.addAction(self.menuProgram.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
 
+       
+        
+
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -298,6 +305,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
         @pyqtSlot()
         def OpenDialogSettings():
+            self.statusbar.showMessage("")
             self.window_settings = QtWidgets.QDialog()
             self.window_settings.setWindowFlags(
                 self.windowFlags() | QtCore.Qt.CustomizeWindowHint)
@@ -311,6 +319,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         @pyqtSlot()
         def OpenLoadFilePicker():
             try:
+                self.statusbar.showMessage("")
                 fileName = QFileDialog.getOpenFileName(
                     self,
                     'Open file',
@@ -325,6 +334,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         @pyqtSlot()
         def OpenSaveFilePicker():
             try:
+                self.statusbar.showMessage("")
                 chosen_filenames = ""
                 
                 fileNames = QFileDialog.getOpenFileNames(
@@ -346,20 +356,26 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         @pyqtSlot()
         def Start_Creating_Shares():
             try:
-
+                self.statusbar.showMessage("")
                 if(self.load_lineEdit.text() != ""):
-                    file = sss.Secondary_Functions.Read_Encrypted_File(
-                        self, self.load_lineEdit.text())
-                    shares = sss.SSS_Functions.Share_Creation(self, file, self.mersenne_comboBox.currentText())
-                    path = self.load_lineEdit.text()
-                    path = path[:path.rfind('/')]
-                    sss.Secondary_Functions.Save_Shares(
-                        self,
-                        path,
-                        shares,
-                        sss.SSS_Functions.security_lvl,
-                        self.min_shares_spinBox.value(),
-                        self.total_shares_spinBox.value())
+                    if self.min_shares_spinBox.value() <= self.total_shares_spinBox.value():
+                        file = sss.Secondary_Functions.Read_Encrypted_File(
+                            self, self.load_lineEdit.text())
+                        shares = sss.SSS_Functions.Share_Creation(self, file, self.mersenne_comboBox.currentText())
+                        path = self.load_lineEdit.text()
+                        path = path[:path.rfind('/')]
+                        
+                        sss.Secondary_Functions.Save_Shares(
+                            self,
+                            path,
+                            shares,
+                            sss.SSS_Functions.security_lvl,
+                            self.min_shares_spinBox.value(),
+                            self.total_shares_spinBox.value())
+                    else:
+                        self.statusbar.showMessage("Min. shares have to be less than total")
+                else:
+                    self.statusbar.showMessage("No file to load")
 
             except Exception as exc:
                 sss.Secondary_Functions.WriteLog(self, exc)
@@ -367,29 +383,35 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         @pyqtSlot()
         def Start_Combining_Shares():
             try:
-                shares = sss.Secondary_Functions.Load_Shares(
-                    self,
-                    sss.Secondary_Functions.share_fileNames)
+                self.statusbar.showMessage("")
+                if(self.save_lineEdit.text() != ""):
+                    shares = sss.Secondary_Functions.Load_Shares(
+                        self,
+                        sss.Secondary_Functions.share_fileNames)
 
-                path = sss.Secondary_Functions.share_fileNames[0][0]
-                path = str(path)
-                path = path[:path.rfind('/')]
+                    path = sss.Secondary_Functions.share_fileNames[0][0]
+                    path = str(path)
+                    path = path[:path.rfind('/')]
 
-                sss.SSS_Functions.Share_Combining(
-                    self, self.combine_mersenne_comboBox.currentText(),
-                    self.min_shares_spinBox.value(),
-                    shares, path)
-                
-                os.startfile(path)
+                    sss.SSS_Functions.Share_Combining(
+                        self, self.combine_mersenne_comboBox.currentText(),
+                        self.min_shares_spinBox.value(),
+                        shares, path)
+                    
+                    os.startfile(path)
+                else:
+                    self.statusbar.showMessage("No shares to load")
             except Exception as exc:
                 sss.Secondary_Functions.WriteLog(self, exc)
 
         @pyqtSlot()
         def TotalSprinBoxChanged():
+            self.statusbar.showMessage("")
             sss.SSS_Functions.total_shares = self.total_shares_spinBox.value()
 
         @pyqtSlot()
         def MinSprinBoxChanged():
+            self.statusbar.showMessage("")
             sss.SSS_Functions.min_shares = self.min_shares_spinBox.value()
 
         self.load_Button.clicked.connect(OpenLoadFilePicker)
@@ -402,7 +424,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "S-S-S"))
         self.total_shares_label.setText(
             _translate("MainWindow", "Total Shares"))
         self.min_shares_label.setText(
