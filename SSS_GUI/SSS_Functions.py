@@ -1,14 +1,28 @@
+# -*- coding: utf-8 -*-
 """
-The following Python implementation of Shamir's Secret Sharing is
-released into the Public Domain under the terms of CC0 and OWFa:
-https://creativecommons.org/publicdomain/zero/1.0/
-http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0
+*** S-S-S Shamir's Secret Sharing ***
+"Easily share secrets in parts and reconstruct them again from
+an minimum amount of parts.
+Easily switch the Tor-Exit-Node Destination Country in
+your Tor-Browser.
+GUI Copyright (C) 2020  Ned84 ned84@protonmail.com
+For further information visit:
+https://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing
 
-Refer to https://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-from __future__ import division
-from __future__ import print_function
+# from __future__ import division
+# from __future__ import print_function
 
 import random
 import functools
@@ -189,6 +203,7 @@ class SSS_Functions(object):
         
     def Share_Combining(self, sec_lvl, minimum, shares, folder):
         try:
+            succeeded = False
             prep_list = [(int(shares[i][:3]), int(shares[i][3:]))
                   for i in range(0, len(shares))]
 
@@ -224,10 +239,12 @@ class SSS_Functions(object):
             with open(file, "w") as stream:
                 stream.write(secret_string[1:])
 
-            pass
+            succeeded = True
+            return succeeded
 
         except Exception as exc:
             Secondary_Functions.WriteLog(self, exc)
+            return succeeded
 
         # print('Secret:                                                     ',
         #       secret)
@@ -258,6 +275,7 @@ class Secondary_Functions(object):
 
     def Save_Shares(self, folder, shares, sec_lvl, minimum, total):
         try:
+            succeeded = False
             path = folder + "/Shares"
             overview_text = "Security Level:\t" + str(sec_lvl) + "\n" +\
                             "Minimum Shares:\t" + str(minimum) + "\n" +\
@@ -283,8 +301,12 @@ class Secondary_Functions(object):
             file = path + "/Overview" + ".txt"
             with open(file, "w") as stream:
                 stream.write(overview_text)
+
+            succeeded = True
+            return succeeded
         except Exception as exc:
             Secondary_Functions.WriteLog(self, exc)
+            return succeeded
 
     def Load_Shares(self, files):
         shares_list = []

@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-OnionSwitch | Easily switch the Tor-Exit-Node Destination Country in
+*** S-S-S Shamir's Secret Sharing ***
+"Easily share secrets in parts and reconstruct them again from
+an minimum amount of parts.
+Easily switch the Tor-Exit-Node Destination Country in
 your Tor-Browser.
-Copyright (C) 2019  Ned84 ned84@protonmail.com
+GUI Copyright (C) 2020  Ned84 ned84@protonmail.com
+For further information visit:
+https://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing
+
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -59,6 +65,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     versionnew = ""
     versioncheckdone = False
     firstrun = True
+
+    only_gui_vis = True
 
     def __init__(self, *args, **kwargs):
         try:
@@ -303,18 +311,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.total_shares_spinBox.setValue(sss.SSS_Functions.total_shares)
         self.min_shares_spinBox.setValue(sss.SSS_Functions.min_shares)
 
-        @pyqtSlot()
-        def OpenDialogSettings():
-            self.statusbar.showMessage("")
-            self.window_settings = QtWidgets.QDialog()
-            self.window_settings.setWindowFlags(
-                self.windowFlags() | QtCore.Qt.CustomizeWindowHint)
-            self.window_settings.setWindowFlags(
-                self.windowFlags() & ~QtCore.Qt.WindowCloseButtonHint)
-            self.window_settings.installEventFilter(self)
-            self.ui = Ui_SettingsDialog()
-            self.ui.setupUi(self.window_settings)
-            self.window_settings.show()
+        
 
         @pyqtSlot()
         def OpenLoadFilePicker():
@@ -343,12 +340,18 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                     'c:\\',
                     "Share Files (*.share)")
 
+                i = 0
+                for files in fileNames[0]:
+                    i += 1
                 
-                if fileNames[0]:
-                    sss.Secondary_Functions.share_fileNames = fileNames
-                    for name in fileNames[0]:
-                        chosen_filenames += name + " "
-                    self.save_lineEdit.setText(chosen_filenames)
+                if i >= self.min_shares_spinBox.value():
+                    if fileNames[0]:
+                        sss.Secondary_Functions.share_fileNames = fileNames
+                        for name in fileNames[0]:
+                            chosen_filenames += name + " "
+                        self.save_lineEdit.setText(chosen_filenames)
+                else:
+                    self.statusbar.showMessage("Loaded Shares have to be >= minimum shares")
 
             except Exception as exc:
                 sss.Secondary_Functions.WriteLog(self, exc)
@@ -365,17 +368,19 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                         path = self.load_lineEdit.text()
                         path = path[:path.rfind('/')]
                         
-                        sss.Secondary_Functions.Save_Shares(
+                        if sss.Secondary_Functions.Save_Shares(
                             self,
                             path,
                             shares,
                             sss.SSS_Functions.security_lvl,
                             self.min_shares_spinBox.value(),
-                            self.total_shares_spinBox.value())
+                            self.total_shares_spinBox.value()) is True:
+                                self.statusbar.showMessage("Shares successfully created")
+                                os.startfile(path + "/Shares")
                     else:
                         self.statusbar.showMessage("Min. shares have to be less than total")
                 else:
-                    self.statusbar.showMessage("No file to load")
+                    self.statusbar.showMessage("Error: No file to load")
 
             except Exception as exc:
                 sss.Secondary_Functions.WriteLog(self, exc)
@@ -393,14 +398,18 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                     path = str(path)
                     path = path[:path.rfind('/')]
 
-                    sss.SSS_Functions.Share_Combining(
+                    if sss.SSS_Functions.Share_Combining(
                         self, self.combine_mersenne_comboBox.currentText(),
                         self.min_shares_spinBox.value(),
-                        shares, path)
+                        shares, path):
+                            self.statusbar.showMessage("Shares successfully combined")
+                            os.startfile(path)
+                    else:
+                        self.statusbar.showMessage("Error: Shares not combined")
                     
-                    os.startfile(path)
+                    
                 else:
-                    self.statusbar.showMessage("No shares to load")
+                    self.statusbar.showMessage("Error: No shares to load")
             except Exception as exc:
                 sss.Secondary_Functions.WriteLog(self, exc)
 
@@ -414,6 +423,46 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             self.statusbar.showMessage("")
             sss.SSS_Functions.min_shares = self.min_shares_spinBox.value()
 
+        @pyqtSlot()
+        def OpenDialogAbout():
+            self.statusbar.showMessage("")
+            if Ui_MainWindow.only_gui_vis is True:
+                Ui_MainWindow.only_gui_vis = False
+                self.window = QtWidgets.QDialog()
+                self.window.setWindowFlags(
+                    self.windowFlags() | QtCore.Qt.CustomizeWindowHint)
+                self.window.setWindowFlags(
+                    self.windowFlags() & ~QtCore.Qt.WindowCloseButtonHint)
+                self.window.installEventFilter(self)
+                self.ui = Ui_AboutDialog()
+                self.ui.setupUi(self.window)
+                if self.window.isVisible():
+                    Ui_AboutDialog.close()
+                self.window.finished.connect(DialogAboutClosed)
+                self.window.show()
+
+        def DialogAboutClosed():
+            Ui_MainWindow.only_gui_vis = True
+
+        @pyqtSlot()
+        def OpenDialogSettings():
+            if Ui_MainWindow.only_gui_vis is True:
+                Ui_MainWindow.only_gui_vis = False
+                self.statusbar.showMessage("")
+                self.window_settings = QtWidgets.QDialog()
+                self.window_settings.setWindowFlags(
+                    self.windowFlags() | QtCore.Qt.CustomizeWindowHint)
+                self.window_settings.setWindowFlags(
+                    self.windowFlags() & ~QtCore.Qt.WindowCloseButtonHint)
+                self.window_settings.installEventFilter(self)
+                self.ui = Ui_SettingsDialog()
+                self.ui.setupUi(self.window_settings)
+                self.window_settings.finished.connect(DialogSettingsClosed)
+                self.window_settings.show()
+
+        def DialogSettingsClosed():
+            Ui_MainWindow.only_gui_vis = True
+
         self.load_Button.clicked.connect(OpenLoadFilePicker)
         self.create_start_Button.clicked.connect(Start_Creating_Shares)
         self.total_shares_spinBox.valueChanged.connect(TotalSprinBoxChanged)
@@ -421,6 +470,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.actionSettings.triggered.connect(OpenDialogSettings)
         self.save_Button.clicked.connect(OpenSaveFilePicker)
         self.combine_start_Button.clicked.connect(Start_Combining_Shares)
+        self.actionAbout.triggered.connect(OpenDialogAbout)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -458,7 +508,7 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
         _translate = QtCore.QCoreApplication.translate
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(
-            ":/resources/OnionSwitch_Logo.png"),
+            ":/Logo/SSS_Logo.png"),
             QtGui.QIcon.Normal, QtGui.QIcon.Off)
         SettingsDialog.setWindowIcon(icon)
         font = Fonts.Choose_Fonts(self, False, 10, "Arial")
@@ -538,6 +588,70 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
             "SettingsDialog", "Language:"))
         self.choose_mersenne_Label.setText(_translate(
             "SettingsDialog", "Prime Encryption:"))
+
+
+class Ui_AboutDialog(QtWidgets.QWidget):
+    def setupUi(self, AboutDialog):
+        AboutDialog.setObjectName("AboutDialog")
+        AboutDialog.resize(400, 250)
+        AboutDialog.setMinimumSize(QtCore.QSize(400, 250))
+        AboutDialog.setMaximumSize(QtCore.QSize(400, 250))
+        AboutDialog.setStyleSheet(
+            "QDialog#AboutDialog {background-color: qlineargradient("
+            "spread:pad, x1:1, y1:0, x2:, y2:1, stop:0 rgb("
+            "200,200,200), stop:1 rgb(253,253,253));}")
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(
+            ":/Logo/SSS_Logo.png"),
+            QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        AboutDialog.setWindowIcon(icon)
+        self.closeButton = QtWidgets.QPushButton(AboutDialog)
+        self.closeButton.setGeometry(QtCore.QRect(290, 210, 93, 28))
+        self.closeButton.setObjectName("closeButton")
+        self.ned84_logo_frame = QtWidgets.QFrame(AboutDialog)
+        self.ned84_logo_frame.setGeometry(QtCore.QRect(10, 50, 141, 131))
+        self.ned84_logo_frame.setStyleSheet(
+            "image: url(:/Logo/SSS_Logo.png);")
+        self.ned84_logo_frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.ned84_logo_frame.setObjectName("sss_logo_frame")
+        self.label = QtWidgets.QLabel(AboutDialog)
+        self.label.setGeometry(QtCore.QRect(190, 20, 200, 31))
+        font = Fonts.Choose_Fonts(self, True, 10, "Arial")
+        self.label.setFont(font)
+        self.label.setObjectName("label")
+        self.label_2 = QtWidgets.QLabel(AboutDialog)
+        self.label_2.setGeometry(QtCore.QRect(190, 50, 190, 130))
+        font = Fonts.Choose_Fonts(self, False, 8, "MS Shell Dlg 2")
+        self.label_2.setFont(font)
+        self.label_2.setObjectName("label_2")
+
+        self.trans = QtCore.QTranslator(self)
+
+        self.retranslateUi(AboutDialog)
+        QtCore.QMetaObject.connectSlotsByName(AboutDialog)
+
+        @pyqtSlot()
+        def Close_About():
+            AboutDialog.close()
+
+        self.closeButton.clicked.connect(Close_About)
+
+    def retranslateUi(self, AboutDialog):
+        _translate = QtCore.QCoreApplication.translate
+        AboutDialog.setWindowTitle(_translate("AboutDialog", "About"))
+        self.closeButton.setText(_translate("AboutDialog", "Close"))
+        self.label.setText(_translate("AboutDialog", "Shamir's Secret Sharing"))
+        string_1 = "Version: "
+        string_2 = (_translate("AboutDialog",
+                               "Easily share secrets in parts\n"
+                               "and reconstruct them again from\n"
+                               "an minimum amount of parts.\n"
+                               "GUI Copyright (C) 2020  Ned84\n"
+                               "ned84@protonmail.com"))
+
+        self.label_2.setText(string_1 + version + "\n" +
+                             "\n" +
+                             string_2)
 
 
 if __name__ == "__main__":
