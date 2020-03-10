@@ -25,11 +25,15 @@ import platform
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QFileDialog
+from PyQt5.Qt import QApplication
 
 
 import SSS_Functions as sss
 import SSS_Resources
 import os
+import webbrowser
+import threading
+from urllib import request
 
 version = "0.1"
 
@@ -65,8 +69,11 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     versionnew = ""
     versioncheckdone = False
     firstrun = True
+    update_avail = False
 
     only_gui_vis = True
+
+    SSS_Resources.qInitResources()
 
     def __init__(self, *args, **kwargs):
         try:
@@ -131,39 +138,37 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
         except Exception as exc:
             sss.Secondary_Functions.WriteLog(self, exc)
-        # try:
-        #     def UpdateCheck():
-        #         link = ("https://github.com/Ned84/OnionSwitch/blob/master/" +
-        #                 "VERSION.md")
-        #         url = request.urlopen(link)
-        #         readurl = url.read()
-        #         text = readurl.decode(encoding='utf-8', errors='ignore')
-        #         stringindex = text.find("OnionSwitchVersion")
+        try:
+            def UpdateCheck():
+                link = ("https://github.com/Ned84/OnionSwitch/blob/master/" +
+                        "VERSION.md")
+                url = request.urlopen(link)
+                readurl = url.read()
+                text = readurl.decode(encoding='utf-8', errors='ignore')
+                stringindex = text.find("OnionSwitchVersion")
 
-        #         if stringindex != -1:
-        #             Ui_MainWindow.versionnew = text[stringindex +
-        #                                             20:stringindex + 23]
-        #             Ui_MainWindow.versionnew = \
-        #                 Ui_MainWindow.versionnew.replace('_', '.')
+                if stringindex != -1:
+                    Ui_MainWindow.versionnew = text[stringindex +
+                                                    20:stringindex + 23]
+                    Ui_MainWindow.versionnew = \
+                        Ui_MainWindow.versionnew.replace('_', '.')
 
-        #         if version < Ui_MainWindow.versionnew:
-        #             Ui_MainWindow.serverconnection = True
-        #             osf.Functions.paramupdateavailable = True
-        #             Ui_MainWindow.versioncheckdone = True
+                if version < Ui_MainWindow.versionnew:
+                    Ui_MainWindow.serverconnection = True
+                    Ui_MainWindow.update_avail = True
+                    Ui_MainWindow.versioncheckdone = True
 
-        #         else:
-        #             Ui_MainWindow.serverconnection = True
-        #             osf.Functions.paramupdateavailable = False
-        #             Ui_MainWindow.versioncheckdone = True
+                else:
+                    Ui_MainWindow.serverconnection = True
+                    Ui_MainWindow.update_avail = False
+                    Ui_MainWindow.versioncheckdone = True
 
-        #         osf.Functions.WriteSettingsToJson(self)
+            urlthread = threading.Thread(target=UpdateCheck, daemon=True)
+            urlthread.start()
 
-        #     urlthread = threading.Thread(target=UpdateCheck, daemon=True)
-        #     urlthread.start()
-
-        # except Exception:
-        #     osf.Functions.paramupdateavailable = False
-        #     Ui_MainWindow.versioncheckdone = True
+        except Exception:
+            Ui_MainWindow.update_avail = False
+            Ui_MainWindow.versioncheckdone = True
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -199,10 +204,11 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.tabWidget.setStyleSheet(stylesheet)
         self.create_tab = QtWidgets.QWidget()
         self.create_tab.setObjectName("create_tab")
-        self.create_tab.setStyleSheet("QWidget#create_tab {background-color: "
-                                "qlineargradient(spread:pad, x1:1, y1:0, x2:,"
-                                "y2:1, stop:0 rgb("
-                                "200,200,200), stop:1 rgb(253,253,253));}")
+        self.create_tab.setStyleSheet(
+            "QWidget#create_tab {background-color: "
+            "qlineargradient(spread:pad, x1:1, y1:0, x2:,"
+            "y2:1, stop:0 rgb("
+            "200,200,200), stop:1 rgb(253,253,253));}")
         self.tabWidget.addTab(self.create_tab, "")
 
         self.combine_tab = QtWidgets.QWidget()
@@ -221,11 +227,14 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.total_shares_label = QtWidgets.QLabel(self.create_tab)
         self.total_shares_label.setGeometry(QtCore.QRect(150, 10, 110, 16))
         self.total_shares_label.setObjectName("total_shares_label")
-        self.total_shares_label.setFont(Fonts.Choose_Fonts(self, False, 10, "Arial"))
+        self.total_shares_label.setFont(
+            Fonts.Choose_Fonts(self, False, 10, "Arial"))
         self.min_shares_label = QtWidgets.QLabel(self.centralwidget)
-        self.min_shares_label.setGeometry(QtCore.QRect(10, 35, 125, 16)) 
+        self.min_shares_label.setGeometry(
+            QtCore.QRect(10, 35, 125, 16))
         self.min_shares_label.setObjectName("min_shares_label")
-        self.min_shares_label.setFont(Fonts.Choose_Fonts(self, False, 10, "Arial"))
+        self.min_shares_label.setFont(Fonts.Choose_Fonts(
+            self, False, 10, "Arial"))
         self.load_lineEdit = QtWidgets.QLineEdit(self.create_tab)
         self.load_lineEdit.setGeometry(QtCore.QRect(10, 150, 211, 22))
         self.load_lineEdit.setObjectName("load_lineEdit")
@@ -249,7 +258,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.choose_mersenne_Label = QtWidgets.QLabel(
             self.create_tab)
         self.choose_mersenne_Label.setGeometry(QtCore.QRect(10, 60, 171, 21))
-        self.choose_mersenne_Label.setFont(Fonts.Choose_Fonts(self, False, 10, "Arial"))
+        self.choose_mersenne_Label.setFont(
+            Fonts.Choose_Fonts(self, False, 10, "Arial"))
         self.choose_mersenne_Label.setObjectName("choose_mersenne_Label")
         self.mersenne_comboBox = QtWidgets.QComboBox(
             self.create_tab)
@@ -262,12 +272,15 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.combine_mersenne_Label = QtWidgets.QLabel(
             self.combine_tab)
         self.combine_mersenne_Label.setGeometry(QtCore.QRect(10, 60, 171, 21))
-        self.combine_mersenne_Label.setFont(Fonts.Choose_Fonts(self, False, 10, "Arial"))
+        self.combine_mersenne_Label.setFont(
+            Fonts.Choose_Fonts(self, False, 10, "Arial"))
         self.combine_mersenne_Label.setObjectName("combine_mersenne_Label")
         self.combine_mersenne_comboBox = QtWidgets.QComboBox(
             self.combine_tab)
-        self.combine_mersenne_comboBox.setObjectName("combine_mersenne_comboBox")
-        self.combine_mersenne_comboBox.setGeometry(QtCore.QRect(10, 80, 230, 22))
+        self.combine_mersenne_comboBox.setObjectName(
+            "combine_mersenne_comboBox")
+        self.combine_mersenne_comboBox.setGeometry(
+            QtCore.QRect(10, 80, 230, 22))
         for number in sss.SSS_Functions.prime_array:
             self.combine_mersenne_comboBox.addItem(str(number))
 
@@ -298,9 +311,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.menubar.addAction(self.menuProgram.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
 
-       
-        
-
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -310,8 +320,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
         self.total_shares_spinBox.setValue(sss.SSS_Functions.total_shares)
         self.min_shares_spinBox.setValue(sss.SSS_Functions.min_shares)
-
-        
 
         @pyqtSlot()
         def OpenLoadFilePicker():
@@ -333,7 +341,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             try:
                 self.statusbar.showMessage("")
                 chosen_filenames = ""
-                
+
                 fileNames = QFileDialog.getOpenFileNames(
                     self,
                     'Save Files',
@@ -343,7 +351,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                 i = 0
                 for files in fileNames[0]:
                     i += 1
-                
+
                 if i >= self.min_shares_spinBox.value():
                     if fileNames[0]:
                         sss.Secondary_Functions.share_fileNames = fileNames
@@ -351,7 +359,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                             chosen_filenames += name + " "
                         self.save_lineEdit.setText(chosen_filenames)
                 else:
-                    self.statusbar.showMessage("Loaded Shares have to be >= minimum shares")
+                    self.statusbar.showMessage(
+                        "Loaded Shares have to be >= minimum shares")
 
             except Exception as exc:
                 sss.Secondary_Functions.WriteLog(self, exc)
@@ -361,24 +370,28 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             try:
                 self.statusbar.showMessage("")
                 if(self.load_lineEdit.text() != ""):
-                    if self.min_shares_spinBox.value() <= self.total_shares_spinBox.value():
+                    if self.min_shares_spinBox.value() <=\
+                         self.total_shares_spinBox.value():
                         file = sss.Secondary_Functions.Read_Encrypted_File(
                             self, self.load_lineEdit.text())
-                        shares = sss.SSS_Functions.Share_Creation(self, file, self.mersenne_comboBox.currentText())
+                        shares = sss.SSS_Functions.Share_Creation(
+                            self, file, self.mersenne_comboBox.currentText())
                         path = self.load_lineEdit.text()
                         path = path[:path.rfind('/')]
-                        
+
                         if sss.Secondary_Functions.Save_Shares(
-                            self,
-                            path,
-                            shares,
-                            sss.SSS_Functions.security_lvl,
-                            self.min_shares_spinBox.value(),
-                            self.total_shares_spinBox.value()) is True:
-                                self.statusbar.showMessage("Shares successfully created")
-                                os.startfile(path + "/Shares")
+                                self,
+                                path,
+                                shares,
+                                sss.SSS_Functions.security_lvl,
+                                self.min_shares_spinBox.value(),
+                                self.total_shares_spinBox.value()) is True:
+                            self.statusbar.showMessage(
+                                "Shares successfully created")
+                            os.startfile(path + "/Shares")
                     else:
-                        self.statusbar.showMessage("Min. shares have to be less than total")
+                        self.statusbar.showMessage(
+                            "Min. shares have to be less than total")
                 else:
                     self.statusbar.showMessage("Error: No file to load")
 
@@ -399,15 +412,16 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                     path = path[:path.rfind('/')]
 
                     if sss.SSS_Functions.Share_Combining(
-                        self, self.combine_mersenne_comboBox.currentText(),
-                        self.min_shares_spinBox.value(),
-                        shares, path):
-                            self.statusbar.showMessage("Shares successfully combined")
-                            os.startfile(path)
+                            self, self.combine_mersenne_comboBox.currentText(),
+                            self.min_shares_spinBox.value(),
+                            shares,
+                            path):
+                        self.statusbar.showMessage(
+                            "Shares successfully combined")
+                        os.startfile(path)
                     else:
-                        self.statusbar.showMessage("Error: Shares not combined")
-                    
-                    
+                        self.statusbar.showMessage(
+                            "Error: Shares not combined")
                 else:
                     self.statusbar.showMessage("Error: No shares to load")
             except Exception as exc:
@@ -436,12 +450,29 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                 self.window.installEventFilter(self)
                 self.ui = Ui_AboutDialog()
                 self.ui.setupUi(self.window)
-                if self.window.isVisible():
-                    Ui_AboutDialog.close()
                 self.window.finished.connect(DialogAboutClosed)
                 self.window.show()
 
         def DialogAboutClosed():
+            Ui_MainWindow.only_gui_vis = True
+
+        @pyqtSlot()
+        def OpenDialogUpdate():
+            self.statusbar.showMessage("")
+            if Ui_MainWindow.only_gui_vis is True:
+                Ui_MainWindow.only_gui_vis = False
+                self.window = QtWidgets.QDialog()
+                self.window.setWindowFlags(
+                    self.windowFlags() | QtCore.Qt.CustomizeWindowHint)
+                self.window.setWindowFlags(
+                    self.windowFlags() & ~QtCore.Qt.WindowCloseButtonHint)
+                self.window.installEventFilter(self)
+                self.ui = Ui_UpdateDialog()
+                self.ui.setupUi(self.window)
+                self.window.finished.connect(DialogUpdateClosed)
+                self.window.show()
+
+        def DialogUpdateClosed():
             Ui_MainWindow.only_gui_vis = True
 
         @pyqtSlot()
@@ -463,6 +494,16 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         def DialogSettingsClosed():
             Ui_MainWindow.only_gui_vis = True
 
+        @pyqtSlot()
+        def Wiki_Clipboard():
+            clip = QApplication.clipboard()
+            clip.clear(mode=clip.Clipboard)
+            clip.setText("https://en.wikipedia.org/wiki/"
+                         "Shamir%27s_Secret_Sharing",
+                         mode=clip.Clipboard)
+            self.statusbar.showMessage(
+                "URL to Wikipedia: SSS is saved to clipboard")
+
         self.load_Button.clicked.connect(OpenLoadFilePicker)
         self.create_start_Button.clicked.connect(Start_Creating_Shares)
         self.total_shares_spinBox.valueChanged.connect(TotalSprinBoxChanged)
@@ -471,6 +512,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.save_Button.clicked.connect(OpenSaveFilePicker)
         self.combine_start_Button.clicked.connect(Start_Combining_Shares)
         self.actionAbout.triggered.connect(OpenDialogAbout)
+        self.actionWikipedia.triggered.connect(Wiki_Clipboard)
+        self.actionUpdate.triggered.connect(OpenDialogUpdate)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -640,7 +683,8 @@ class Ui_AboutDialog(QtWidgets.QWidget):
         _translate = QtCore.QCoreApplication.translate
         AboutDialog.setWindowTitle(_translate("AboutDialog", "About"))
         self.closeButton.setText(_translate("AboutDialog", "Close"))
-        self.label.setText(_translate("AboutDialog", "Shamir's Secret Sharing"))
+        self.label.setText(_translate(
+            "AboutDialog", "Shamir's Secret Sharing"))
         string_1 = "Version: "
         string_2 = (_translate("AboutDialog",
                                "Easily share secrets in parts\n"
@@ -654,6 +698,117 @@ class Ui_AboutDialog(QtWidgets.QWidget):
                              string_2)
 
 
+class Ui_UpdateDialog(QtWidgets.QWidget):
+    def setupUi(self, UpdateDialog):
+        UpdateDialog.setObjectName("UpdateDialog")
+        UpdateDialog.resize(400, 250)
+        UpdateDialog.setMinimumSize(QtCore.QSize(400, 250))
+        UpdateDialog.setMaximumSize(QtCore.QSize(400, 250))
+        UpdateDialog.setStyleSheet(
+            "QDialog#UpdateDialog {background-color: qlineargradient("
+            "spread:pad, x1:1, y1:0, x2:, y2:1, stop:0 rgb("
+            "200,200,200), stop:1 rgb(253,253,253));}")
+        icon = QtGui.QIcon()
+        icon.addPixmap(
+            QtGui.QPixmap(":/Logo/SSS_Logo.png"),
+            QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        UpdateDialog.setWindowIcon(icon)
+        self.cancelButton = QtWidgets.QPushButton(UpdateDialog)
+        self.cancelButton.setGeometry(QtCore.QRect(290, 210, 93, 28))
+        self.cancelButton.setObjectName("Cancel")
+        self.updateButton = QtWidgets.QPushButton(UpdateDialog)
+        self.updateButton.setGeometry(QtCore.QRect(180, 210, 93, 28))
+        self.updateButton.setObjectName("updateButton")
+        self.SSS_logo_frame = QtWidgets.QFrame(UpdateDialog)
+        self.SSS_logo_frame.setGeometry(QtCore.QRect(10, 50, 141, 131))
+        self.SSS_logo_frame.setStyleSheet(
+            "image: url(:/Logo/SSS_Logo.png);")
+        self.SSS_logo_frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.SSS_logo_frame.setObjectName("SSS_logo_frame")
+        self.label = QtWidgets.QLabel(UpdateDialog)
+        self.label.setGeometry(QtCore.QRect(90, 20, 280, 31))
+        self.label2 = QtWidgets.QLabel(UpdateDialog)
+        self.label2.setGeometry(QtCore.QRect(170, 60, 301, 131))
+        self.label3 = QtWidgets.QLabel(UpdateDialog)
+        self.label3.setGeometry(QtCore.QRect(170, 60, 301, 131))
+        self.label4 = QtWidgets.QLabel(UpdateDialog)
+        self.label4.setGeometry(QtCore.QRect(170, 60, 301, 131))
+        font = Fonts.Choose_Fonts(self, True, 12, "Arial")
+        self.label.setFont(font)
+        self.label.setObjectName("label")
+
+        self.trans = QtCore.QTranslator(self)
+
+        self.retranslateUi(UpdateDialog)
+        QtCore.QMetaObject.connectSlotsByName(UpdateDialog)
+
+        @pyqtSlot()
+        def StartUpdateProc():
+            Ui_MainWindow.update_avail = False
+            webbrowser.open(
+                'https://github.com/Ned84/SSS_Shamirs_Secret_Sharing/releases')
+
+        @pyqtSlot()
+        def Close_Update():
+            UpdateDialog.close()
+
+        self.cancelButton.clicked.connect(Close_Update)
+
+        self.updateButton.clicked.connect(StartUpdateProc)
+
+    def retranslateUi(self, UpdateDialog):
+        _translate = QtCore.QCoreApplication.translate
+        UpdateDialog.setWindowTitle(_translate("UpdateDialog", "Update"))
+        self.cancelButton.setText(_translate("UpdateDialog", "Cancel"))
+        self.updateButton.setText(_translate("UpdateDialog", "Update"))
+        self.label.setText(_translate(
+            "UpdateDialog", "Shamir's Secret Sharing"))
+
+        self.label3.setText(_translate(
+            "UpdateDialog", "No connection to Github."))
+        font = Fonts.Choose_Fonts(self, False, 9, "Arial")
+        self.label3.setFont(font)
+        string1 = (_translate("UpdateDialog", "Current Version: "))
+        string2 = (_translate("UpdateDialog", "New Version: "))
+        string3 = (_translate("UpdateDialog", "No Update available."))
+        string4 = (_translate(
+            "UpdateDialog", "Do you want to Update\nthis Program?"))
+
+        self.label2.setText(
+            string1 + version + "\n"
+            "\n"
+            + string2 + Ui_MainWindow.versionnew + "\n"
+            "\n"
+            + string4)
+
+        self.label4.setText(string1 + version + "\n"
+                            "\n"
+                            + string2 + Ui_MainWindow.versionnew + "\n"
+                            "\n"
+                            + string3)
+
+        self.label4.setFont(font)
+
+        self.label2.setFont(font)
+
+        if Ui_MainWindow.serverconnection is False:
+            self.updateButton.setEnabled(False)
+            self.label2.hide()
+            self.label4.hide()
+            self.label3.show()
+        else:
+            if Ui_MainWindow.update_avail is True:
+                self.updateButton.setEnabled(True)
+                self.label2.show()
+                self.label4.hide()
+                self.label3.hide()
+            else:
+                self.updateButton.setEnabled(False)
+                self.label2.hide()
+                self.label4.show()
+                self.label3.hide()
+
+
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
@@ -664,4 +819,3 @@ if __name__ == "__main__":
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
-

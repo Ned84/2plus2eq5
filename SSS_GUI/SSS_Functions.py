@@ -196,16 +196,13 @@ class SSS_Functions(object):
             secret=secret_int,
             prime=SSS_Functions.prime)
 
-        
-
-
         return shares
-        
+
     def Share_Combining(self, sec_lvl, minimum, shares, folder):
         try:
             succeeded = False
             prep_list = [(int(shares[i][:3]), int(shares[i][3:]))
-                  for i in range(0, len(shares))]
+                         for i in range(0, len(shares))]
 
             # new_shares = []
             # for share in shares:
@@ -216,14 +213,13 @@ class SSS_Functions(object):
             prime = 2 ** int(sec_lvl) - 1
             secret = SSS_Functions.recover_secret(
                 self, prep_list[:int(minimum)], prime=prime)
-           
 
             i = 1
             secret_string = ""
             secret_ascii = ""
             for char in str(secret):
                 secret_ascii += char
-                
+
                 if i >= 3:
                     secret_string += chr(int(secret_ascii))
                     secret_ascii = ""
@@ -235,7 +231,6 @@ class SSS_Functions(object):
             else:
                 file = folder + "/Combined_Shares.txt"
 
-            
             with open(file, "w") as stream:
                 stream.write(secret_string[1:])
 
@@ -245,17 +240,6 @@ class SSS_Functions(object):
         except Exception as exc:
             Secondary_Functions.WriteLog(self, exc)
             return succeeded
-
-        # print('Secret:                                                     ',
-        #       secret)
-        # print('Shares:')
-        # if shares:
-        #     for share in shares:
-        #         print('  ', share)
-
-        # SSS_Functions.secret_out = SSS_Functions.recover_secret(
-        #     self, shares[:SSS_Functions.min_shares], prime=SSS_Functions.prime)
-        # print("Secret:\t\t\t" + str(SSS_Functions.secret_out))
 
 
 class Secondary_Functions(object):
@@ -286,7 +270,7 @@ class Secondary_Functions(object):
                 shutil.rmtree(path)
                 os.makedirs(path)
             i = 1
-            
+
             for share in shares:
                 file = path + "/Share_" + str(i) + ".share"
                 with open(file, "w") as stream:
@@ -310,7 +294,7 @@ class Secondary_Functions(object):
 
     def Load_Shares(self, files):
         shares_list = []
-        
+
         stream_line = ""
         stream_int = ""
 
@@ -319,7 +303,6 @@ class Secondary_Functions(object):
                 stream_line = stream.read()
                 stream_int = int(stream_line[3:], 16)
                 stream_line = stream_line[:3] + str(stream_int)
-                #stream_line = stream_line[0] + str(int(stream_line, 16))
                 shares_list.append(stream_line)
         return shares_list
 
