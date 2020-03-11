@@ -30,6 +30,9 @@ from PyQt5.Qt import QApplication
 
 import SSS_Functions as sss
 import SSS_Resources
+
+import gnupg
+from pathlib import Path
 import os
 import webbrowser
 import threading
@@ -63,15 +66,19 @@ class Fonts():
         return font
 
 
+
+
 class Ui_MainWindow(QtWidgets.QMainWindow):
 
     serverconnection = False
     versionnew = ""
-    versioncheckdone = False
     firstrun = True
     update_avail = False
 
     only_gui_vis = True
+
+    gpg_pub_keyring = []
+    usr_path = str(Path.home())
 
     SSS_Resources.qInitResources()
 
@@ -138,37 +145,35 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
         except Exception as exc:
             sss.Secondary_Functions.WriteLog(self, exc)
-        try:
-            def UpdateCheck():
-                link = ("https://github.com/Ned84/OnionSwitch/blob/master/" +
-                        "VERSION.md")
-                url = request.urlopen(link)
-                readurl = url.read()
-                text = readurl.decode(encoding='utf-8', errors='ignore')
-                stringindex = text.find("OnionSwitchVersion")
+        #try:
+            # def UpdateCheck():
+            #     link = ("https://github.com/Ned84/"
+            #             "SSS_Shamirs_Secret_Sharing/blob/master/"
+            #             "VERSION.md")
+            #     url = request.urlopen(link)
+            #     readurl = url.read()
+            #     text = readurl.decode(encoding='utf-8', errors='ignore')
+            #     stringindex = text.find("SSS-Version")
 
-                if stringindex != -1:
-                    Ui_MainWindow.versionnew = text[stringindex +
-                                                    20:stringindex + 23]
-                    Ui_MainWindow.versionnew = \
-                        Ui_MainWindow.versionnew.replace('_', '.')
+            #     if stringindex != -1:
+            #         Ui_MainWindow.versionnew = text[stringindex +
+            #                                         13:]
+            #         Ui_MainWindow.versionnew = \
+            #             Ui_MainWindow.versionnew.replace('_', '.')
 
-                if version < Ui_MainWindow.versionnew:
-                    Ui_MainWindow.serverconnection = True
-                    Ui_MainWindow.update_avail = True
-                    Ui_MainWindow.versioncheckdone = True
+            #     if version < Ui_MainWindow.versionnew:
+            #         Ui_MainWindow.serverconnection = True
+            #         Ui_MainWindow.update_avail = True
 
-                else:
-                    Ui_MainWindow.serverconnection = True
-                    Ui_MainWindow.update_avail = False
-                    Ui_MainWindow.versioncheckdone = True
+            #     else:
+            #         Ui_MainWindow.serverconnection = True
+            #         Ui_MainWindow.update_avail = False
 
-            urlthread = threading.Thread(target=UpdateCheck, daemon=True)
-            urlthread.start()
+            # urlthread = threading.Thread(target=UpdateCheck, daemon=True)
+            # urlthread.start()
 
-        except Exception:
-            Ui_MainWindow.update_avail = False
-            Ui_MainWindow.versioncheckdone = True
+        #except Exception:
+            #Ui_MainWindow.update_avail = False
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -314,6 +319,40 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+        
+        
+
+        # List keyrings
+        gpg = gnupg.GPG(gnupghome=Ui_MainWindow.usr_path + '\\AppData\\Roaming\\gnupg')
+        public_keys = gpg.list_keys()
+        private_keys = gpg.list_keys(True)
+
+        i = 0
+        for sub, value in vars(public_keys).items():
+            if sub == "uids":
+                for id in value:
+                    Ui_MainWindow.gpg_pub_keyring.append(id)
+
+
+        # # Encrypt file
+        # open('C:\\Users\\baumg\\Downloads\\Test\\my-unencrypted.txt', 'w').write('You need to Google Venn diagram.')
+        # with open('C:\\Users\\baumg\\Downloads\\Test\\my-unencrypted.txt', 'rb') as f:
+        #     status = gpg.encrypt_file(
+        #         f, recipients=['boraas@bor.aas'],
+        #         output='C:\\Users\\baumg\\Downloads\\Test\\my-encrypted.txt.gpg')
+
+        # print('ok: ', status.ok)
+        # print ('status: ', status.status)
+        # print ('stderr: ', status.stderr)
+
+        # # Decrypt File
+        # with open('C:\\Users\\baumg\\Downloads\\Test\\my-encrypted.txt.gpg', 'rb') as f:
+        #     status = gpg.decrypt_file(f, output='C:\\Users\\baumg\\Downloads\\Test\\my-decrypted.txt')
+
+        # print('ok: ', status.ok)
+        # print('status: ', status.status)
+        # print('stderr: ', status.stderr)
 
         self.tabWidget.setCurrentWidget(self.tabWidget.findChild(
             QtWidgets.QWidget, "create_tab"))
