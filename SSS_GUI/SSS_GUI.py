@@ -70,6 +70,7 @@ class Fonts():
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
 
+    # Update Parameter
     serverconnection = False
     versionnew = ""
     firstrun = True
@@ -78,7 +79,14 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     only_gui_vis = True
 
     gpg_pub_keyring = []
+    gpg_priv_keyring = []
     usr_path = str(Path.home())
+
+    # Settings parameter
+    auto_update = False
+    gpg_chosen_public_key = ""
+    gpg_chosen_private_key = ""
+    gpg_path = usr_path + '\\AppData\\Roaming\\gnupg'
 
     SSS_Resources.qInitResources()
 
@@ -145,35 +153,36 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
         except Exception as exc:
             sss.Secondary_Functions.WriteLog(self, exc)
-        #try:
-            # def UpdateCheck():
-            #     link = ("https://github.com/Ned84/"
-            #             "SSS_Shamirs_Secret_Sharing/blob/master/"
-            #             "VERSION.md")
-            #     url = request.urlopen(link)
-            #     readurl = url.read()
-            #     text = readurl.decode(encoding='utf-8', errors='ignore')
-            #     stringindex = text.find("SSS-Version")
+        try:
+            def UpdateCheck():
+                link = ("https://github.com/Ned84/"
+                        "SSS_Shamirs_Secret_Sharing/blob/master/"
+                        "VERSION.md")
+                url = request.urlopen(link)
+                readurl = url.read()
+                text = readurl.decode(encoding='utf-8', errors='ignore')
+                stringindex = text.find("SSS-Version")
 
-            #     if stringindex != -1:
-            #         Ui_MainWindow.versionnew = text[stringindex +
-            #                                         13:]
-            #         Ui_MainWindow.versionnew = \
-            #             Ui_MainWindow.versionnew.replace('_', '.')
+                if stringindex != -1:
+                    Ui_MainWindow.versionnew = text[stringindex +
+                                                    13:]
+                    Ui_MainWindow.versionnew = \
+                        Ui_MainWindow.versionnew.replace('_', '.')
 
-            #     if version < Ui_MainWindow.versionnew:
-            #         Ui_MainWindow.serverconnection = True
-            #         Ui_MainWindow.update_avail = True
+                if version < Ui_MainWindow.versionnew:
+                    Ui_MainWindow.serverconnection = True
+                    Ui_MainWindow.update_avail = True
 
-            #     else:
-            #         Ui_MainWindow.serverconnection = True
-            #         Ui_MainWindow.update_avail = False
+                else:
+                    Ui_MainWindow.serverconnection = True
+                    Ui_MainWindow.update_avail = False
 
-            # urlthread = threading.Thread(target=UpdateCheck, daemon=True)
-            # urlthread.start()
+            if Ui_MainWindow.auto_update is True:
+                urlthread = threading.Thread(target=UpdateCheck, daemon=True)
+                urlthread.start()
 
-        #except Exception:
-            #Ui_MainWindow.update_avail = False
+        except Exception:
+            Ui_MainWindow.update_avail = False
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -319,21 +328,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
-        
-        
-
-        # List keyrings
-        gpg = gnupg.GPG(gnupghome=Ui_MainWindow.usr_path + '\\AppData\\Roaming\\gnupg')
-        public_keys = gpg.list_keys()
-        private_keys = gpg.list_keys(True)
-
-        i = 0
-        for sub, value in vars(public_keys).items():
-            if sub == "uids":
-                for id in value:
-                    Ui_MainWindow.gpg_pub_keyring.append(id)
-
 
         # # Encrypt file
         # open('C:\\Users\\baumg\\Downloads\\Test\\my-unencrypted.txt', 'w').write('You need to Google Venn diagram.')
@@ -594,23 +588,28 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
             QtGui.QIcon.Normal, QtGui.QIcon.Off)
         SettingsDialog.setWindowIcon(icon)
         font = Fonts.Choose_Fonts(self, False, 10, "Arial")
+
         self.cancel_Button = QtWidgets.QPushButton(SettingsDialog)
         self.cancel_Button.setGeometry(QtCore.QRect(300, 260, 90, 28))
         self.cancel_Button.setObjectName("cancel_Button")
         self.ok_Button = QtWidgets.QPushButton(SettingsDialog)
         self.ok_Button.setGeometry(QtCore.QRect(200, 260, 90, 28))
         self.ok_Button.setObjectName("ok_Button")
+
         self.main_listWidget = QtWidgets.QListWidget(SettingsDialog)
         self.main_listWidget.setGeometry(QtCore.QRect(0, 0, 150, 300))
         self.main_listWidget.setObjectName("main_listview")
         self.main_listWidget.setFont(font)
         self.main_listWidget.addItem(_translate(
             "SettingsDialog", "General"))
+        self.main_listWidget.addItem(_translate(
+            "SettingsDialog", "GPG"))
         self.main_listWidget.setStyleSheet(
             "background-color: qlineargradient("
             "spread:pad, x1:1, y1:1, x2:0, y2:0, stop:0 rgb("
             "0, 0, 0), stop:1 rgb(60, 60, 60));")
         self.main_listWidget.item(0).setForeground(QtCore.Qt.white)
+        self.main_listWidget.item(1).setForeground(QtCore.Qt.white)
 
         self.general_groupbox = QtWidgets.QGroupBox(SettingsDialog)
         self.general_groupbox.setGeometry(QtCore.QRect(150, 0, 250, 300))
@@ -620,29 +619,9 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
             "spread:pad, x1:1, y1:0, x2:, y2:1, stop:0 rgb("
             "60, 60, 60), stop:1 rgb(60,60,60))};")
         self.general_groupbox.setObjectName("general_groupbox")
-        self.choose_mersenne_prime_groupbox = QtWidgets.QGroupBox(
-            self.general_groupbox)
-        self.choose_mersenne_prime_groupbox.setObjectName(
-            "choose_mersenne_prime_groupbox")
-        self.choose_mersenne_prime_groupbox.setGeometry(0, 0, 250, 110)
-        self.choose_mersenne_Label = QtWidgets.QLabel(
-            self.choose_mersenne_prime_groupbox)
-        self.choose_mersenne_Label.setGeometry(QtCore.QRect(10, 10, 171, 21))
-        self.choose_mersenne_Label.setFont(font)
-        self.choose_mersenne_Label.setObjectName("choose_mersenne_Label")
-        self.choose_mersenne_Label.setStyleSheet("color:white")
-        self.mersenne_comboBox = QtWidgets.QComboBox(
-            self.choose_mersenne_prime_groupbox)
-        self.mersenne_comboBox.setObjectName("mersenne_comboBox")
-        self.mersenne_comboBox.setGeometry(QtCore.QRect(12, 40, 230, 22))
-        self.mersenne_comboBox.addItem("Default")
-
-        for number in sss.SSS_Functions.prime_array:
-            self.mersenne_comboBox.addItem(str(number))
-
         self.language_groupbox = QtWidgets.QGroupBox(self.general_groupbox)
         self.language_groupbox.setObjectName("language_groupbox")
-        self.language_groupbox.setGeometry(0, 105, 250, 80)
+        self.language_groupbox.setGeometry(0, 0, 250, 80)
         self.language_Label = QtWidgets.QLabel(self.language_groupbox)
         self.language_Label.setObjectName("language_Label")
         self.language_Label.setGeometry(QtCore.QRect(12, 10, 100, 21))
@@ -651,14 +630,243 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
         self.language_comboBox = QtWidgets.QComboBox(self.language_groupbox)
         self.language_comboBox.setObjectName("language_comboBox")
         self.language_comboBox.setGeometry(QtCore.QRect(12, 40, 230, 22))
+        self.language_comboBox.addItem("English")
+
+        self.auto_update_groupbox = QtWidgets.QGroupBox(self.general_groupbox)
+        self.auto_update_groupbox.setGeometry(QtCore.QRect(0, 70, 250, 80))
+        self.auto_update_groupbox.setObjectName("auto_update_groupbox")
+        self.auto_update_groupbox.setStyleSheet(
+            "QGroupBox#auto_update_groupbox {background-color: qlineargradient("
+            "spread:pad, x1:1, y1:0, x2:, y2:1, stop:0 rgb("
+            "60, 60, 60), stop:1 rgb(60,60,60))};")
+        self.auto_update_CheckBox = QtWidgets.QCheckBox(self.auto_update_groupbox)
+        self.auto_update_CheckBox.setGeometry(QtCore.QRect(12, 10, 190, 21))
+        self.auto_update_CheckBox.setFont(font)
+        self.auto_update_CheckBoxLabel = QtWidgets.QLabel(self.auto_update_groupbox)
+        self.auto_update_CheckBoxLabel.setObjectName("auto_update_CheckBoxLabel")
+        self.auto_update_CheckBoxLabel.setGeometry(35, 10, 190, 21)
+        self.auto_update_CheckBoxLabel.setFont(font)
+        self.auto_update_CheckBoxLabel.setStyleSheet("color: white")
+
+        self.gpg_groupbox = QtWidgets.QGroupBox(SettingsDialog)
+        self.gpg_groupbox.setGeometry(QtCore.QRect(150, 0, 250, 300))
+        self.gpg_groupbox.setObjectName("gpg_groupbox")
+        self.gpg_groupbox.setStyleSheet(
+            "QGroupBox#gpg_groupbox {background-color: qlineargradient("
+            "spread:pad, x1:1, y1:0, x2:, y2:1, stop:0 rgb("
+            "60, 60, 60), stop:1 rgb(60,60,60))};")
+        self.gpg_groupbox.setObjectName("gpg_groupbox")
+        self.gpg_groupbox.hide()
+
+        self.gpg_public_groupbox = QtWidgets.QGroupBox(
+            self.gpg_groupbox)
+        self.gpg_public_groupbox.setObjectName(
+            "gpg_public_groupbox")
+        self.gpg_public_groupbox.setGeometry(0, 0, 250, 70)
+        self.gpg_public_Label = QtWidgets.QLabel(
+            self.gpg_public_groupbox)
+        self.gpg_public_Label.setGeometry(QtCore.QRect(10, 10, 171, 21))
+        self.gpg_public_Label.setFont(font)
+        self.gpg_public_Label.setObjectName("gpg_public_Label")
+        self.gpg_public_Label.setStyleSheet("color:white")
+        self.gpg_public_comboBox = QtWidgets.QComboBox(
+            self.gpg_public_groupbox)
+        self.gpg_public_comboBox.setObjectName("gpg_public_comboBox")
+        self.gpg_public_comboBox.setGeometry(QtCore.QRect(12, 40, 230, 22))
+        self.gpg_public_comboBox.addItem("")
+
+        self.gpg_private_groupbox = QtWidgets.QGroupBox(
+            self.gpg_groupbox)
+        self.gpg_private_groupbox.setObjectName(
+            "gpg_private_groupbox")
+        self.gpg_private_groupbox.setGeometry(0, 65, 250, 70)
+        self.gpg_private_Label = QtWidgets.QLabel(
+            self.gpg_private_groupbox)
+        self.gpg_private_Label.setGeometry(QtCore.QRect(10, 10, 171, 21))
+        self.gpg_private_Label.setFont(font)
+        self.gpg_private_Label.setObjectName("gpg_private_Label")
+        self.gpg_private_Label.setStyleSheet("color:white")
+        self.gpg_private_comboBox = QtWidgets.QComboBox(
+            self.gpg_private_groupbox)
+        self.gpg_private_comboBox.setObjectName("gpg_private_comboBox")
+        self.gpg_private_comboBox.setGeometry(QtCore.QRect(12, 40, 230, 22))
+        self.gpg_private_comboBox.addItem("")
+
+        self.gpg_path_groupbox = QtWidgets.QGroupBox(
+            self.gpg_groupbox)
+        self.gpg_path_groupbox.setObjectName(
+            "gpg_path_groupbox")
+        self.gpg_path_groupbox.setGeometry(0, 130, 250, 105)
+        self.gpg_path_Label = QtWidgets.QLabel(
+            self.gpg_path_groupbox)
+        self.gpg_path_Label.setGeometry(QtCore.QRect(10, 10, 171, 21))
+        self.gpg_path_Label.setFont(font)
+        self.gpg_path_Label.setObjectName("gpg_path_Label")
+        self.gpg_path_Label.setStyleSheet("color:white")
+        self.gpg_path_lineedit = QtWidgets.QLineEdit(
+            self.gpg_path_groupbox)
+        self.gpg_path_lineedit.setObjectName("gpg_path_lineedit")
+        self.gpg_path_lineedit.setGeometry(QtCore.QRect(12, 40, 230, 22))
+        self.gpg_path_lineedit.setText("")
+        self.gpg_path_lineedit.setReadOnly(True)
+        self.gpg_choose_Button = QtWidgets.QPushButton(self.gpg_path_groupbox)
+        self.gpg_choose_Button.setGeometry(QtCore.QRect(150, 70, 90, 28))
+        self.gpg_choose_Button.setObjectName("gpg_choose_Button")
+
+        try:
+            # List keyrings
+            gpg = gnupg.GPG(gnupghome=Ui_MainWindow.gpg_path)
+            public_keys = gpg.list_keys()
+            private_keys = gpg.list_keys(True)
+
+            Ui_MainWindow.gpg_pub_keyring = []
+            Ui_MainWindow.gpg_priv_keyring = []
+            self.gpg_public_comboBox.clear()
+            self.gpg_private_comboBox.clear()
+
+            self.gpg_public_comboBox.addItem("No Key chosen")
+            self.gpg_private_comboBox.addItem("No Key chosen")
+
+            for sub, value in vars(public_keys).items():
+                if sub == "uids":
+                    for id in value:
+                        Ui_MainWindow.gpg_pub_keyring.append(id)
+
+            for sub, value in vars(private_keys).items():
+                if sub == "uids":
+                    for id in value:
+                        Ui_MainWindow.gpg_priv_keyring.append(id)
+
+            if len(Ui_MainWindow.gpg_priv_keyring) == 0:
+                self.gpg_private_comboBox.clear()
+                self.gpg_private_comboBox.addItem("No Keys found")
+
+            if len(Ui_MainWindow.gpg_pub_keyring) == 0:
+                self.gpg_public_comboBox.clear()
+                self.gpg_public_comboBox.addItem("No Keys found")
+        except Exception as exc:
+            sss.Secondary_Functions.WriteLog(self, exc)
 
         self.ok_Button.raise_()
         self.cancel_Button.raise_()
 
+        self.auto_update_CheckBox.setChecked(Ui_MainWindow.auto_update)
+
+        for i, key in enumerate(Ui_MainWindow.gpg_pub_keyring):
+            self.gpg_public_comboBox.addItem(key)
+            if key == Ui_MainWindow.gpg_chosen_public_key:
+                self.gpg_public_comboBox.setCurrentIndex(i + 1)
+
+        if Ui_MainWindow.gpg_chosen_public_key == "":
+            self.gpg_public_comboBox.setCurrentIndex(0)
+
+        for i, key in enumerate(Ui_MainWindow.gpg_priv_keyring):
+            self.gpg_private_comboBox.addItem(key)
+            if key == Ui_MainWindow.gpg_chosen_private_key:
+                self.gpg_private_comboBox.setCurrentIndex(i + 1)
+
+        if Ui_MainWindow.gpg_chosen_public_key == "":
+            self.gpg_public_comboBox.setCurrentIndex(0)
+
+        self.gpg_path_lineedit.setText(Ui_MainWindow.gpg_path)
+        
         self.retranslateUi(SettingsDialog)
         QtCore.QMetaObject.connectSlotsByName(SettingsDialog)
 
+        @pyqtSlot()
+        def Main_SelectionChanged():
+
+            if self.main_listWidget.currentItem().text() == "General" or\
+                    self.main_listWidget.currentItem().text() == "Allgemein":
+                self.gpg_groupbox.hide()
+                self.general_groupbox.show()
+                self.ok_Button.raise_()
+                self.cancel_Button.raise_()
+
+            if self.main_listWidget.currentItem().text() == "GPG":
+                self.general_groupbox.hide()
+                self.gpg_groupbox.show()
+                self.ok_Button.raise_()
+                self.cancel_Button.raise_()
+
+        def auto_update_CheckBoxLabel_clicked():
+            Ui_MainWindow.auto_update_CheckBox.setChecked(
+                Ui_MainWindow.auto_update_CheckBox.isChecked() ^ True)
+
+        @pyqtSlot()
+        def OkPressed():
+            Ui_MainWindow.auto_update = self.auto_update_CheckBox.isChecked()
+            Ui_MainWindow.gpg_chosen_public_key = self.gpg_public_comboBox.currentText()
+            Ui_MainWindow.gpg_chosen_private_key = self.gpg_private_comboBox.currentText()
+            Ui_MainWindow.gpg_path = self.gpg_path_lineedit.text()
+            SettingsDialog.close()
+
+        @pyqtSlot()
+        def ChooseGPGPath():
+            try:
+                path = QFileDialog.getExistingDirectory(
+                    self, "Select Tor Directory")
+                if path:
+                    self.gpg_path_lineedit.setText(path)
+                    
+                    # List keyrings
+                    gpg = gnupg.GPG(gnupghome=path)
+                    public_keys = gpg.list_keys()
+                    private_keys = gpg.list_keys(True)
+
+                    Ui_MainWindow.gpg_pub_keyring = []
+                    Ui_MainWindow.gpg_priv_keyring = []
+                    self.gpg_public_comboBox.clear()
+                    self.gpg_private_comboBox.clear()
+
+                    self.gpg_public_comboBox.addItem("No Key chosen")
+                    self.gpg_private_comboBox.addItem("No Key chosen")
+
+                    for sub, value in vars(public_keys).items():
+                        if sub == "uids":
+                            for id in value:
+                                Ui_MainWindow.gpg_pub_keyring.append(id)
+
+                    for sub, value in vars(private_keys).items():
+                        if sub == "uids":
+                            for id in value:
+                                Ui_MainWindow.gpg_priv_keyring.append(id)
+
+                    if len(Ui_MainWindow.gpg_priv_keyring) == 0:
+                        self.gpg_private_comboBox.clear()
+                        self.gpg_private_comboBox.addItem("No Keys found")
+
+                    if len(Ui_MainWindow.gpg_pub_keyring) == 0:
+                        self.gpg_public_comboBox.clear()
+                        self.gpg_public_comboBox.addItem("No Keys found")
+
+                    for i, key in enumerate(Ui_MainWindow.gpg_pub_keyring):
+                        self.gpg_public_comboBox.addItem(key)
+                        if key == Ui_MainWindow.gpg_chosen_public_key:
+                            self.gpg_public_comboBox.setCurrentIndex(i + 1)
+
+                    if Ui_MainWindow.gpg_chosen_public_key == "":
+                        self.gpg_public_comboBox.setCurrentIndex(0)
+
+                    for i, key in enumerate(Ui_MainWindow.gpg_priv_keyring):
+                        self.gpg_private_comboBox.addItem(key)
+                        if key == Ui_MainWindow.gpg_chosen_private_key:
+                            self.gpg_private_comboBox.setCurrentIndex(i + 1)
+
+                    if Ui_MainWindow.gpg_chosen_public_key == "":
+                        self.gpg_public_comboBox.setCurrentIndex(0)
+
+            except Exception as exc:
+                sss.Secondary_Functions.WriteLog(self, exc)
+
+        self.ok_Button.clicked.connect(OkPressed)
         self.cancel_Button.clicked.connect(SettingsDialog.close)
+        self.main_listWidget.currentItemChanged.connect(Main_SelectionChanged)
+        clickable_Label(self.auto_update_CheckBoxLabel).connect(auto_update_CheckBoxLabel_clicked)
+        self.gpg_choose_Button.clicked.connect(ChooseGPGPath)
+        
+
+        
 
     def retranslateUi(self, SettingsDialog):
         _translate = QtCore.QCoreApplication.translate
@@ -668,8 +876,36 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
         self.cancel_Button.setText(_translate("SettingsDialog", "Cancel"))
         self.language_Label.setText(_translate(
             "SettingsDialog", "Language:"))
-        self.choose_mersenne_Label.setText(_translate(
-            "SettingsDialog", "Prime Encryption:"))
+        self.gpg_public_Label.setText(_translate(
+            "SettingsDialog", "GPG Public Keys:"))
+        self.auto_update_CheckBoxLabel.setText(_translate(
+            "SettingsDialog", "Auto Update Check"))
+        self.gpg_private_Label.setText(_translate(
+            "SettingsDialog", "GPG Signing Keys:"))
+        self.gpg_path_Label.setText(_translate(
+            "SettingsDialog", "GPG Path:"))
+        self.gpg_choose_Button.setText(_translate(
+            "SettingsDialog", "Open"))
+
+
+def clickable_Label(widget):
+
+    class Filter(QtCore.QObject):
+        clicked = QtCore.pyqtSignal()
+
+        def eventFilter(self, obj, event):
+
+            if obj == widget:
+                if event.type() == QtCore.QEvent.MouseButtonRelease:
+                    if obj.rect().contains(event.pos()):
+                        self.clicked.emit()
+                        return True
+
+            return False
+
+    filter = Filter(widget)
+    widget.installEventFilter(filter)
+    return filter.clicked
 
 
 class Ui_AboutDialog(QtWidgets.QWidget):
