@@ -66,8 +66,6 @@ class Fonts():
         return font
 
 
-
-
 class Ui_MainWindow(QtWidgets.QMainWindow):
 
     # Update Parameter
@@ -84,6 +82,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
     # Settings parameter
     auto_update = False
+    use_gpg = False
     gpg_chosen_public_key = ""
     gpg_chosen_private_key = ""
     gpg_path = usr_path + '\\AppData\\Roaming\\gnupg'
@@ -640,13 +639,22 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
             "spread:pad, x1:1, y1:0, x2:, y2:1, stop:0 rgb("
             "60, 60, 60), stop:1 rgb(60,60,60))};")
         self.auto_update_CheckBox = QtWidgets.QCheckBox(self.auto_update_groupbox)
-        self.auto_update_CheckBox.setGeometry(QtCore.QRect(12, 10, 190, 21))
+        self.auto_update_CheckBox.setGeometry(QtCore.QRect(12, 15, 190, 21))
         self.auto_update_CheckBox.setFont(font)
         self.auto_update_CheckBoxLabel = QtWidgets.QLabel(self.auto_update_groupbox)
         self.auto_update_CheckBoxLabel.setObjectName("auto_update_CheckBoxLabel")
-        self.auto_update_CheckBoxLabel.setGeometry(35, 10, 190, 21)
+        self.auto_update_CheckBoxLabel.setGeometry(35, 15, 190, 21)
         self.auto_update_CheckBoxLabel.setFont(font)
         self.auto_update_CheckBoxLabel.setStyleSheet("color: white")
+
+        self.use_gpg_Checkbox = QtWidgets.QCheckBox(self.auto_update_groupbox)
+        self.use_gpg_Checkbox.setGeometry(QtCore.QRect(12, 40, 190, 21))
+        self.use_gpg_Checkbox.setFont(font)
+        self.use_gpg_CheckboxLabel = QtWidgets.QLabel(self.auto_update_groupbox)
+        self.use_gpg_CheckboxLabel.setObjectName("use_gpg_CheckboxLabel")
+        self.use_gpg_CheckboxLabel.setGeometry(35, 40, 190, 21)
+        self.use_gpg_CheckboxLabel.setFont(font)
+        self.use_gpg_CheckboxLabel.setStyleSheet("color: white")
 
         self.gpg_groupbox = QtWidgets.QGroupBox(SettingsDialog)
         self.gpg_groupbox.setGeometry(QtCore.QRect(150, 0, 250, 300))
@@ -751,6 +759,7 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
         self.cancel_Button.raise_()
 
         self.auto_update_CheckBox.setChecked(Ui_MainWindow.auto_update)
+        self.use_gpg_Checkbox.setChecked(Ui_MainWindow.use_gpg)
 
         for i, key in enumerate(Ui_MainWindow.gpg_pub_keyring):
             self.gpg_public_comboBox.addItem(key)
@@ -790,8 +799,12 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
                 self.cancel_Button.raise_()
 
         def auto_update_CheckBoxLabel_clicked():
-            Ui_MainWindow.auto_update_CheckBox.setChecked(
-                Ui_MainWindow.auto_update_CheckBox.isChecked() ^ True)
+            self.auto_update_CheckBox.setChecked(
+                self.auto_update_CheckBox.isChecked() ^ True)
+
+        def use_gpg_CheckBoxLabel_clicked():
+            self.use_gpg_Checkbox.setChecked(
+                self.use_gpg_Checkbox.isChecked() ^ True)
 
         @pyqtSlot()
         def OkPressed():
@@ -799,6 +812,7 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
             Ui_MainWindow.gpg_chosen_public_key = self.gpg_public_comboBox.currentText()
             Ui_MainWindow.gpg_chosen_private_key = self.gpg_private_comboBox.currentText()
             Ui_MainWindow.gpg_path = self.gpg_path_lineedit.text()
+            Ui_MainWindow.use_gpg = self.use_gpg_Checkbox.isChecked()
             SettingsDialog.close()
 
         @pyqtSlot()
@@ -863,6 +877,7 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
         self.cancel_Button.clicked.connect(SettingsDialog.close)
         self.main_listWidget.currentItemChanged.connect(Main_SelectionChanged)
         clickable_Label(self.auto_update_CheckBoxLabel).connect(auto_update_CheckBoxLabel_clicked)
+        clickable_Label(self.use_gpg_CheckboxLabel).connect(use_gpg_CheckBoxLabel_clicked)
         self.gpg_choose_Button.clicked.connect(ChooseGPGPath)
         
 
@@ -880,6 +895,8 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
             "SettingsDialog", "GPG Public Keys:"))
         self.auto_update_CheckBoxLabel.setText(_translate(
             "SettingsDialog", "Auto Update Check"))
+        self.use_gpg_CheckboxLabel.setText(_translate(
+            "SettingsDialog", "Use GPG"))
         self.gpg_private_Label.setText(_translate(
             "SettingsDialog", "GPG Signing Keys:"))
         self.gpg_path_Label.setText(_translate(
