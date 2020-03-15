@@ -30,6 +30,7 @@ import datetime
 import sys
 import shutil
 import os
+import gnupg
 
 
 class SSS_Functions(object):
@@ -249,11 +250,54 @@ class Secondary_Functions(object):
     platform = ""
     share_fileNames = []
 
-    def Read_Encrypted_File(self, file):
+    def Read_File(self, file):
         try:
             with open(file) as stream:
                 content = stream.read()
             return content
+        except Exception as exc:
+            Secondary_Functions.WriteLog(self, exc)
+
+    def Encrypt_File(self, gnupg_home, filename, pub_key):
+        try:
+            gpg = gnupg.GPG(gnupghome=gnupg_home)
+            with open(filename, 'rb') as file:
+                status = gpg.encrypt_file(
+                    file,
+                    recipients=[pub_key],
+                    output=filename + '.asc')
+
+            print('ok: ', status.ok)
+            print('status: ', status.status)
+            print('stderr: ', status.stderr)
+        except Exception as exc:
+            Secondary_Functions.WriteLog(self, exc)
+
+    def Sign_File(self, gnupg_home, filename, priv_key):
+        try:
+            gpg = gnupg.GPG(gnupghome=gnupg_home)
+            with open(filename, 'rb') as file:
+                gpg.sign_file(
+                    file,
+                    keyid=priv_key, 
+                    output=filename + '.asc')
+        except Exception as exc:
+            Secondary_Functions.WriteLog(self, exc)
+
+    def Sign_Encrypt_File(self, gnupg_home, filename, priv_key, pub_key):
+        try:
+            gpg = gnupg.GPG(gnupghome=gnupg_home)
+            with open(filename, 'rb') as file:
+                status = gpg.encrypt_file(
+                    file,
+                    recipients=pub_key,
+                    sign=pub_key,
+                    output=filename + '.asc')
+
+            print('ok: ', status.ok)
+            print('status: ', status.status)
+            print('stderr: ', status.stderr)
+
         except Exception as exc:
             Secondary_Functions.WriteLog(self, exc)
 
