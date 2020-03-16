@@ -279,7 +279,7 @@ class Secondary_Functions(object):
             with open(filename, 'rb') as file:
                 gpg.sign_file(
                     file,
-                    keyid=priv_key, 
+                    keyid=priv_key,
                     output=filename + '.asc')
         except Exception as exc:
             Secondary_Functions.WriteLog(self, exc)

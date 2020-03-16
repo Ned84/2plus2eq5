@@ -84,8 +84,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     auto_update = False
     use_gpg_encrypt = False
     use_gpg_sign = False
-    gpg_chosen_public_key = ""
-    gpg_chosen_private_key = ""
+    gpg_chosen_public_key = "No Key chosen"
+    gpg_chosen_private_key = "No Key chosen"
     gpg_path = usr_path + '\\AppData\\Roaming\\gnupg'
 
     SSS_Resources.qInitResources()
@@ -329,25 +329,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-        # # Encrypt file
-        # open('C:\\Users\\baumg\\Downloads\\Test\\my-unencrypted.txt', 'w').write('You need to Google Venn diagram.')
-        # with open('C:\\Users\\baumg\\Downloads\\Test\\my-unencrypted.txt', 'rb') as f:
-        #     status = gpg.encrypt_file(
-        #         f, recipients=['boraas@bor.aas'],
-        #         output='C:\\Users\\baumg\\Downloads\\Test\\my-encrypted.txt.gpg')
-
-        # print('ok: ', status.ok)
-        # print ('status: ', status.status)
-        # print ('stderr: ', status.stderr)
-
-        # # Decrypt File
-        # with open('C:\\Users\\baumg\\Downloads\\Test\\my-encrypted.txt.gpg', 'rb') as f:
-        #     status = gpg.decrypt_file(f, output='C:\\Users\\baumg\\Downloads\\Test\\my-decrypted.txt')
-
-        # print('ok: ', status.ok)
-        # print('status: ', status.status)
-        # print('stderr: ', status.stderr)
-
         self.tabWidget.setCurrentWidget(self.tabWidget.findChild(
             QtWidgets.QWidget, "create_tab"))
 
@@ -401,52 +382,87 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         @pyqtSlot()
         def Start_Creating_Shares():
             try:
+                succeeded = True
                 self.statusbar.showMessage("")
                 if(self.load_lineEdit.text() != ""):
                     if self.min_shares_spinBox.value() <=\
                          self.total_shares_spinBox.value():
 
-                        if Ui_MainWindow.use_gpg_encrypt is True and Ui_MainWindow.use_gpg_sign is True:
-                            sss.Secondary_Functions.Sign_Encrypt_File(
-                                self, Ui_MainWindow.gpg_path, self.load_lineEdit.text(),
-                                Ui_MainWindow.gpg_chosen_private_key, Ui_MainWindow.gpg_chosen_public_key)
+                        if Ui_MainWindow.use_gpg_encrypt is True and\
+                           Ui_MainWindow.use_gpg_sign is True:
+                            if Ui_MainWindow.gpg_chosen_private_key !=\
+                               "No Key chosen" and\
+                                Ui_MainWindow.gpg_chosen_public_key !=\
+                               "No Key chosen":
+                                sss.Secondary_Functions.Sign_Encrypt_File(
+                                    self, Ui_MainWindow.gpg_path,
+                                    self.load_lineEdit.text(),
+                                    Ui_MainWindow.gpg_chosen_private_key,
+                                    Ui_MainWindow.gpg_chosen_public_key)
+                            else:
+                                self.statusbar.showMessage(
+                                    "Private or public key not specified")
+                                succeeded = False
                         else:
 
                             if Ui_MainWindow.use_gpg_encrypt is True:
-                                sss.Secondary_Functions.Encrypt_File(
-                                    self, Ui_MainWindow.gpg_path, self.load_lineEdit.text(), Ui_MainWindow.gpg_chosen_public_key)
-
+                                if Ui_MainWindow.gpg_chosen_public_key !=\
+                                   "No Key chosen":
+                                    sss.Secondary_Functions.Encrypt_File(
+                                        self,
+                                        Ui_MainWindow.gpg_path,
+                                        self.load_lineEdit.text(),
+                                        Ui_MainWindow.gpg_chosen_public_key)
+                                else:
+                                    self.statusbar.showMessage(
+                                        "Public key not specified")
+                                    succeeded = False
                             if Ui_MainWindow.use_gpg_sign is True:
-                                sss.Secondary_Functions.Sign_File(
-                                    self, Ui_MainWindow.gpg_path, self.load_lineEdit.text(), Ui_MainWindow.gpg_chosen_private_key)
+                                if Ui_MainWindow.gpg_chosen_private_key !=\
+                                   "No Key chosen":
+                                    sss.Secondary_Functions.Sign_File(
+                                        self,
+                                        Ui_MainWindow.gpg_path,
+                                        self.load_lineEdit.text(),
+                                        Ui_MainWindow.gpg_chosen_private_key)
+                                else:
+                                    self.statusbar.showMessage(
+                                        "Private key not specified")
+                                    succeeded = False
 
-                        if Ui_MainWindow.use_gpg_encrypt is True or Ui_MainWindow.use_gpg_sign is True:
-                            file = sss.Secondary_Functions.Read_File(
-                                self, self.load_lineEdit.text() + '.asc')
-                        else:
-                            file = sss.Secondary_Functions.Read_File(
-                                self, self.load_lineEdit.text())
+                        if succeeded is True:
+                            if Ui_MainWindow.use_gpg_encrypt is True or\
+                               Ui_MainWindow.use_gpg_sign is True:
+                                file = sss.Secondary_Functions.Read_File(
+                                    self, self.load_lineEdit.text() + '.asc')
+                            else:
+                                file = sss.Secondary_Functions.Read_File(
+                                    self, self.load_lineEdit.text())
 
-                        shares = sss.SSS_Functions.Share_Creation(
-                            self, file, self.mersenne_comboBox.currentText())
-                        path = self.load_lineEdit.text()
-                        path = path[:path.rfind('/')]
-
-                        if sss.Secondary_Functions.Save_Shares(
+                            shares = sss.SSS_Functions.Share_Creation(
                                 self,
-                                path,
-                                shares,
-                                sss.SSS_Functions.security_lvl,
-                                self.min_shares_spinBox.value(),
-                                self.total_shares_spinBox.value()) is True:
-                            self.statusbar.showMessage(
-                                "Shares successfully created")
-                            os.startfile(path + "/Shares")
+                                file,
+                                self.mersenne_comboBox.currentText())
+                            path = self.load_lineEdit.text()
+                            path = path[:path.rfind('/')]
+
+                            if sss.Secondary_Functions.Save_Shares(
+                                    self,
+                                    path,
+                                    shares,
+                                    sss.SSS_Functions.security_lvl,
+                                    self.min_shares_spinBox.value(),
+                                    self.total_shares_spinBox.value()) is True:
+                                self.statusbar.showMessage(
+                                    "Shares successfully created")
+                                os.startfile(path + "/Shares")
                     else:
                         self.statusbar.showMessage(
                             "Min. shares have to be less than total")
+                        succeeded = False
                 else:
                     self.statusbar.showMessage("Error: No file to load")
+                    succeeded = False
 
             except Exception as exc:
                 sss.Secondary_Functions.WriteLog(self, exc)
@@ -656,32 +672,43 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
         self.auto_update_groupbox.setGeometry(QtCore.QRect(0, 70, 250, 100))
         self.auto_update_groupbox.setObjectName("auto_update_groupbox")
         self.auto_update_groupbox.setStyleSheet(
-            "QGroupBox#auto_update_groupbox {background-color: qlineargradient("
+            "QGroupBox#auto_update_groupbox {"
+            "background-color: qlineargradient("
             "spread:pad, x1:1, y1:0, x2:, y2:1, stop:0 rgb("
             "60, 60, 60), stop:1 rgb(60,60,60))};")
-        self.auto_update_CheckBox = QtWidgets.QCheckBox(self.auto_update_groupbox)
+        self.auto_update_CheckBox = QtWidgets.QCheckBox(
+            self.auto_update_groupbox)
         self.auto_update_CheckBox.setGeometry(QtCore.QRect(12, 15, 190, 21))
         self.auto_update_CheckBox.setFont(font)
-        self.auto_update_CheckBoxLabel = QtWidgets.QLabel(self.auto_update_groupbox)
-        self.auto_update_CheckBoxLabel.setObjectName("auto_update_CheckBoxLabel")
+        self.auto_update_CheckBoxLabel = QtWidgets.QLabel(
+            self.auto_update_groupbox)
+        self.auto_update_CheckBoxLabel.setObjectName(
+            "auto_update_CheckBoxLabel")
         self.auto_update_CheckBoxLabel.setGeometry(35, 15, 190, 21)
         self.auto_update_CheckBoxLabel.setFont(font)
         self.auto_update_CheckBoxLabel.setStyleSheet("color: white")
 
-        self.use_gpg_encrypt_Checkbox = QtWidgets.QCheckBox(self.auto_update_groupbox)
-        self.use_gpg_encrypt_Checkbox.setGeometry(QtCore.QRect(12, 40, 190, 21))
+        self.use_gpg_encrypt_Checkbox = QtWidgets.QCheckBox(
+            self.auto_update_groupbox)
+        self.use_gpg_encrypt_Checkbox.setGeometry(
+            QtCore.QRect(12, 40, 190, 21))
         self.use_gpg_encrypt_Checkbox.setFont(font)
-        self.use_gpg_encrypt_CheckboxLabel = QtWidgets.QLabel(self.auto_update_groupbox)
-        self.use_gpg_encrypt_CheckboxLabel.setObjectName("use_gpg_encrypt_CheckboxLabel")
+        self.use_gpg_encrypt_CheckboxLabel = QtWidgets.QLabel(
+            self.auto_update_groupbox)
+        self.use_gpg_encrypt_CheckboxLabel.setObjectName(
+            "use_gpg_encrypt_CheckboxLabel")
         self.use_gpg_encrypt_CheckboxLabel.setGeometry(35, 40, 190, 21)
         self.use_gpg_encrypt_CheckboxLabel.setFont(font)
         self.use_gpg_encrypt_CheckboxLabel.setStyleSheet("color: white")
 
-        self.use_gpg_sign_Checkbox = QtWidgets.QCheckBox(self.auto_update_groupbox)
+        self.use_gpg_sign_Checkbox = QtWidgets.QCheckBox(
+            self.auto_update_groupbox)
         self.use_gpg_sign_Checkbox.setGeometry(QtCore.QRect(12, 65, 190, 21))
         self.use_gpg_sign_Checkbox.setFont(font)
-        self.use_gpg_sign_CheckboxLabel = QtWidgets.QLabel(self.auto_update_groupbox)
-        self.use_gpg_sign_CheckboxLabel.setObjectName("use_gpg_sign_CheckboxLabel")
+        self.use_gpg_sign_CheckboxLabel = QtWidgets.QLabel(
+            self.auto_update_groupbox)
+        self.use_gpg_sign_CheckboxLabel.setObjectName(
+            "use_gpg_sign_CheckboxLabel")
         self.use_gpg_sign_CheckboxLabel.setGeometry(35, 65, 190, 21)
         self.use_gpg_sign_CheckboxLabel.setFont(font)
         self.use_gpg_sign_CheckboxLabel.setStyleSheet("color: white")
@@ -809,7 +836,7 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
             self.gpg_public_comboBox.setCurrentIndex(0)
 
         self.gpg_path_lineedit.setText(Ui_MainWindow.gpg_path)
-        
+
         self.retranslateUi(SettingsDialog)
         QtCore.QMetaObject.connectSlotsByName(SettingsDialog)
 
@@ -844,10 +871,13 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
         @pyqtSlot()
         def OkPressed():
             Ui_MainWindow.auto_update = self.auto_update_CheckBox.isChecked()
-            Ui_MainWindow.gpg_chosen_public_key = self.gpg_public_comboBox.currentText()
-            Ui_MainWindow.gpg_chosen_private_key = self.gpg_private_comboBox.currentText()
+            Ui_MainWindow.gpg_chosen_public_key =\
+                self.gpg_public_comboBox.currentText()
+            Ui_MainWindow.gpg_chosen_private_key =\
+                self.gpg_private_comboBox.currentText()
             Ui_MainWindow.gpg_path = self.gpg_path_lineedit.text()
-            Ui_MainWindow.use_gpg_encrypt = self.use_gpg_encrypt_Checkbox.isChecked()
+            Ui_MainWindow.use_gpg_encrypt =\
+                self.use_gpg_encrypt_Checkbox.isChecked()
             Ui_MainWindow.use_gpg_sign = self.use_gpg_sign_Checkbox.isChecked()
             SettingsDialog.close()
 
@@ -858,7 +888,7 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
                     self, "Select Tor Directory")
                 if path:
                     self.gpg_path_lineedit.setText(path)
-                    
+
                     # List keyrings
                     gpg = gnupg.GPG(gnupghome=path)
                     public_keys = gpg.list_keys()
@@ -912,13 +942,13 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
         self.ok_Button.clicked.connect(OkPressed)
         self.cancel_Button.clicked.connect(SettingsDialog.close)
         self.main_listWidget.currentItemChanged.connect(Main_SelectionChanged)
-        clickable_Label(self.auto_update_CheckBoxLabel).connect(auto_update_CheckBoxLabel_clicked)
-        clickable_Label(self.use_gpg_encrypt_CheckboxLabel).connect(use_gpg_encrypt_CheckBoxLabel_clicked)
-        clickable_Label(self.use_gpg_sign_CheckboxLabel).connect(use_gpg_sign_CheckBoxLabel_clicked)
+        clickable_Label(self.auto_update_CheckBoxLabel).connect(
+            auto_update_CheckBoxLabel_clicked)
+        clickable_Label(self.use_gpg_encrypt_CheckboxLabel).connect(
+            use_gpg_encrypt_CheckBoxLabel_clicked)
+        clickable_Label(self.use_gpg_sign_CheckboxLabel).connect(
+            use_gpg_sign_CheckBoxLabel_clicked)
         self.gpg_choose_Button.clicked.connect(ChooseGPGPath)
-        
-
-        
 
     def retranslateUi(self, SettingsDialog):
         _translate = QtCore.QCoreApplication.translate
