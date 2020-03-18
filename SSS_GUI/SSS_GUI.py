@@ -46,7 +46,7 @@ class Fonts():
     def Choose_Fonts(self, bold, size, font_type):
         font = QtGui.QFont()
         font.setFamily(font_type)
-        if sss.Secondary_Functions.paramplatform == "Windows":
+        if sss.Secondary_Functions.platform == "Windows":
             if bold is True:
                 font.setBold(True)
                 font.setWeight(75)
@@ -87,72 +87,21 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     gpg_chosen_public_key = "No Key chosen"
     gpg_chosen_private_key = "No Key chosen"
     gpg_path = usr_path + '\\AppData\\Roaming\\gnupg'
+    language = ""
 
     SSS_Resources.qInitResources()
 
     def __init__(self, *args, **kwargs):
-        try:
-            super().__init__()
+        super().__init__()
 
-            sss.Secondary_Functions.paramplatform = platform.system()
+        param_details = sss.Secondary_Functions.Init_Param_GUI(self, version)
+        Ui_MainWindow.auto_update = param_details['Auto_Update']
+        Ui_MainWindow.update_avail = param_details['Update_available']
+        Ui_MainWindow.use_gpg_encrypt = param_details['Use_GPG_Encr']
+        Ui_MainWindow.use_gpg_sign = param_details['Use_GPG_Sign']
+        Ui_MainWindow.gpg_path = param_details['GPG_Path']
+        Ui_MainWindow.language = param_details['Language']
 
-            # if osf.Functions.paramplatform == "Windows":
-            #     osf.Functions.pathtoparam = os.getenv(
-            #         'LOCALAPPDATA') + '\\OnionSwitch\\osparam'
-            #     osf.Functions.pathtolog = os.getenv(
-            #         'LOCALAPPDATA') + '\\OnionSwitch\\logfiles'
-            #     osf.Functions.pathtomain = os.getenv(
-            #         'LOCALAPPDATA') + '\\OnionSwitch'
-            #     osf.Functions.pathseparator = "\\"
-            #     osf.Functions.paramlanguagefiles = "\\i18n\\"
-
-            # if osf.Functions.paramplatform == "Linux":
-            #     osf.Functions.pathtoparam = os.path.dirname(
-            #         os.path.abspath(__file__)) + '/OnionSwitch/osparam'
-            #     osf.Functions.pathtolog = os.path.dirname(
-            #         os.path.abspath(__file__)) + '/OnionSwitch/logfiles'
-            #     osf.Functions.pathtomain = os.path.dirname(
-            #         os.path.abspath(__file__)) + '/OnionSwitch'
-            #     osf.Functions.pathseparator = "/"
-            #     osf.Functions.paramlanguagefiles = "/i18n/"
-
-            # if path.exists(osf.Functions.pathtomain) is False:
-            #     os.mkdir(osf.Functions.pathtomain)
-
-            # if path.exists(osf.Functions.pathtoparam) is False:
-            #     os.mkdir(osf.Functions.pathtoparam)
-
-            # if path.exists(osf.Functions.pathtolog) is False:
-            #     os.mkdir(osf.Functions.pathtolog)
-
-            # if path.exists(
-            #         osf.Functions.pathtoparam + osf.Functions.pathseparator +
-            #         'Param.json') is False:
-
-            #     with open(
-            #         osf.Functions.pathtoparam + osf.Functions.pathseparator +
-            #             'Param.json', "w+") as file:
-
-            #         data = [{"Version": version, "Path_to_Tor": "",
-            #                 "Update_available": False, "StrictNodes": 1,
-            #                  "Platform": "", "StemCheck": False,
-            #                  "StemCheck_Time": 10, "Language": ""}]
-
-            #         json.dump(data, file, indent=1, sort_keys=True)
-
-            # if path.exists(
-            #     osf.Functions.pathtolog + osf.Functions.pathseparator +
-            #         'oslog.txt') is False:
-
-            #     with open(
-            #         osf.Functions.pathtolog + osf.Functions.pathseparator +
-            #             'oslog.txt', "w+") as file:
-            #         pass
-
-            # osf.Functions.GetSettingsFromJson(self)
-
-        except Exception as exc:
-            sss.Secondary_Functions.WriteLog(self, exc)
         try:
             def UpdateCheck():
                 link = ("https://github.com/Ned84/"

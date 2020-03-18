@@ -31,6 +31,9 @@ import sys
 import shutil
 import os
 import gnupg
+import json
+import platform
+from os import path
 
 
 class SSS_Functions(object):
@@ -244,11 +247,133 @@ class SSS_Functions(object):
 
 
 class Secondary_Functions(object):
-    path_to_log = ""
     path_separator = ""
+    directory = os.path.dirname(os.path.abspath(__file__))
+    dir_param = ""
+    dir_logs = ""
 
     platform = ""
     share_fileNames = []
+
+    def Init_Param_GUI(self, version):
+        try:
+            Secondary_Functions.platform = platform.system()
+
+            if Secondary_Functions.platform == "Windows":
+                Secondary_Functions.path_separator = "\\"
+                Secondary_Functions.dir_para = Secondary_Functions.directory +\
+                    Secondary_Functions.path_separator + 'param'
+                Secondary_Functions.dir_logs = Secondary_Functions.directory +\
+                    Secondary_Functions.path_separator + 'logs'
+
+            if Secondary_Functions.platform == "Linux":
+                Secondary_Functions.path_separator = "/"
+                Secondary_Functions.dir_para = Secondary_Functions.directory +\
+                    Secondary_Functions.path_separator + 'param'
+                Secondary_Functions.dir_logs = Secondary_Functions.directory +\
+                    Secondary_Functions.path_separator + 'logs'
+
+            if path.exists(Secondary_Functions.dir_para) is False:
+                os.mkdir(Secondary_Functions.dir_para)
+
+            if path.exists(Secondary_Functions.dir_logs) is False:
+                os.mkdir(Secondary_Functions.dir_logs)
+
+            if path.exists(
+                    Secondary_Functions.dir_para +
+                    Secondary_Functions.path_separator +
+                    'Param.json') is False:
+
+                with open(
+                    Secondary_Functions.dir_para +
+                    Secondary_Functions.path_separator +
+                        'Param.json', "w+") as file:
+
+                    data = [{"Version": version, "Auto_Update": False,
+                            "Update_available": False, "Use_GPG_Encr": False,
+                             "Use_GPG_Sign": False, "Platform": "",
+                             "GPG_Path": "", "Language": ""}]
+
+                    json.dump(data, file, indent=1, sort_keys=True)
+
+            if path.exists(
+                Secondary_Functions.dir_logs +
+                Secondary_Functions.path_separator +
+                    'ssslog.txt') is False:
+
+                with open(
+                    Secondary_Functions.dir_logs +
+                    Secondary_Functions.path_separator +
+                        'ssslog.txt', "w+") as file:
+                    pass
+
+            return Secondary_Functions.GetSettingsFromJson(self)
+
+        except Exception as exc:
+            Secondary_Functions.WriteLog(self, exc)
+
+    def GetSettingsFromJson(self):
+        # Get Settings from Json file and write parameter variables
+        try:
+            with open(
+                    Secondary_Functions.dir_para +
+                    Secondary_Functions.path_separator +
+                        'Param.json') as file:
+                json_array = json.load(file)
+                param_list = []
+
+                for item in json_array:
+                    param_details = {}
+                    param_details['Auto_Update'] = item['Auto_Update']
+                    param_details['Version'] = item['Version']
+                    param_details['Update_available'] = item[
+                        'Update_available']
+                    param_details['Use_GPG_Encr'] = item['Use_GPG_Encr']
+                    param_details['Use_GPG_Sign'] = item['Use_GPG_Sign']
+                    param_details['Platform'] = item['Platform']
+                    param_details['GPG_Path'] = item['GPG_Path']
+                    param_details['Language'] = item['Language']
+                    param_list.append(param_details)
+
+                return param_details
+
+        except Exception as exc:
+            Secondary_Functions.WriteLog(self, exc)
+
+    def WriteSettingsToJson(self):
+        # Write Settings to json file
+        try:
+            with open(
+                Secondary_Functions.directory +
+                Secondary_Functions.path_separator +
+                'par' + Secondary_Functions.path_separator +
+                    'Param.json', "r") as file:
+            
+                param_list = []
+
+                param_details = {}
+                param_details['Path_to_Tor'] = Functions.parampathtotor
+                param_details['Version'] = Functions.paramversion
+                param_details['Update_available'] = \
+                    Functions.paramupdateavailable
+                param_details['StrictNodes'] = Functions.paramstrictnodes
+                param_details['Platform'] = Functions.paramplatform
+                param_details['StemCheck'] = Functions.paramstemcheck
+                param_details['StemCheck_Time'] = Functions.paramstemchecktime
+                param_details['Language'] = Functions.paramlanguage
+                param_list.append(param_details)
+
+            with open(Functions.pathtoparam + Functions.pathseparator +
+                      'Param.json', "w") as file:
+                json.dump(param_list, file, indent=1, sort_keys=True)
+
+            if path.exists(Functions.torrcfilepath) is False:
+                Functions.torrcfound = False
+            else:
+                Functions.torrcfound = True
+
+        except Exception as exc:
+            Functions.WriteLog(self, exc)
 
     def Read_File(self, file):
         try:
@@ -354,7 +479,7 @@ class Secondary_Functions(object):
         # Function to write passed in Exceptions
         # into a log file if so chosen
         # in a try/catch block
-        with open(Secondary_Functions.path_to_log +
+        with open(Secondary_Functions.dir_logs +
                   Secondary_Functions.path_separator +
                   'ssslog.txt', "a") as logfile:
             dt = datetime.datetime.now()
