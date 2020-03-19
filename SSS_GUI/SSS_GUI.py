@@ -522,6 +522,15 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             self.statusbar.showMessage(
                 "URL to Wikipedia: SSS is saved to clipboard")
 
+        @pyqtSlot()
+        def Changed_Mersenne_Combobox():
+            self.statusbar.showMessage("")
+            if self.mersenne_comboBox.currentText() != "Default":
+                if int(self.mersenne_comboBox.currentText()) > 1400000:
+                    self.statusbar.showMessage("High Encryption Lvls can take a while to process")
+            
+            
+
         self.load_Button.clicked.connect(OpenLoadFilePicker)
         self.create_start_Button.clicked.connect(Start_Creating_Shares)
         self.total_shares_spinBox.valueChanged.connect(TotalSprinBoxChanged)
@@ -532,6 +541,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.actionAbout.triggered.connect(OpenDialogAbout)
         self.actionWikipedia.triggered.connect(Wiki_Clipboard)
         self.actionUpdate.triggered.connect(OpenDialogUpdate)
+        self.mersenne_comboBox.currentTextChanged.connect(Changed_Mersenne_Combobox)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -727,6 +737,7 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
         self.gpg_choose_Button.setGeometry(QtCore.QRect(150, 70, 90, 28))
         self.gpg_choose_Button.setObjectName("gpg_choose_Button")
 
+
         try:
             # List keyrings
             gpg = gnupg.GPG(gnupghome=Ui_MainWindow.gpg_path)
@@ -828,6 +839,7 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
             Ui_MainWindow.use_gpg_encrypt =\
                 self.use_gpg_encrypt_Checkbox.isChecked()
             Ui_MainWindow.use_gpg_sign = self.use_gpg_sign_Checkbox.isChecked()
+            sss.Secondary_Functions.WriteSettingsToJson(self)
             SettingsDialog.close()
 
         @pyqtSlot()
@@ -977,6 +989,7 @@ class Ui_AboutDialog(QtWidgets.QWidget):
         font = Fonts.Choose_Fonts(self, False, 8, "MS Shell Dlg 2")
         self.label_2.setFont(font)
         self.label_2.setObjectName("label_2")
+
 
         self.trans = QtCore.QTranslator(self)
 
