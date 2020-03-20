@@ -255,7 +255,7 @@ class Secondary_Functions(object):
     platform = ""
     share_fileNames = []
 
-    def Init_Param_GUI(self, version):
+    def Init_Param_GUI(self, version, gpg_path):
         try:
             Secondary_Functions.platform = platform.system()
 
@@ -291,8 +291,8 @@ class Secondary_Functions(object):
 
                     data = [{"Version": version, "Auto_Update": False,
                             "Update_available": False, "Use_GPG_Encr": False,
-                             "Use_GPG_Sign": False, "Platform": "",
-                             "GPG_Path": "", "Language": ""}]
+                             "Use_GPG_Sign": False, "Platform": Secondary_Functions.platform,
+                             "GPG_Path": gpg_path, "Language": ""}]
 
                     json.dump(data, file, indent=1, sort_keys=True)
 
@@ -318,7 +318,7 @@ class Secondary_Functions(object):
             with open(
                     Secondary_Functions.dir_para +
                     Secondary_Functions.path_separator +
-                        'Param.json') as file:
+                    'Param.json') as file:
                 json_array = json.load(file)
                 param_list = []
 
@@ -330,7 +330,6 @@ class Secondary_Functions(object):
                         'Update_available']
                     param_details['Use_GPG_Encr'] = item['Use_GPG_Encr']
                     param_details['Use_GPG_Sign'] = item['Use_GPG_Sign']
-                    param_details['Platform'] = item['Platform']
                     param_details['GPG_Path'] = item['GPG_Path']
                     param_details['Language'] = item['Language']
                     param_list.append(param_details)
@@ -340,40 +339,35 @@ class Secondary_Functions(object):
         except Exception as exc:
             Secondary_Functions.WriteLog(self, exc)
 
-    def WriteSettingsToJson(self):
+    def WriteSettingsToJson(self, parameter):
         # Write Settings to json file
         try:
-            with open(
-                Secondary_Functions.directory +
-                Secondary_Functions.path_separator +
-                'par' + Secondary_Functions.path_separator +
-                    'Param.json', "r") as file:
-            
-                param_list = []
+            # with open(
+            #     Secondary_Functions.dir_para +
+            #         Secondary_Functions.path_separator +
+            #         'Param.json', "r") as file:
 
-                param_details = {}
-                param_details['Path_to_Tor'] = Functions.parampathtotor
-                param_details['Version'] = Functions.paramversion
-                param_details['Update_available'] = \
-                    Functions.paramupdateavailable
-                param_details['StrictNodes'] = Functions.paramstrictnodes
-                param_details['Platform'] = Functions.paramplatform
-                param_details['StemCheck'] = Functions.paramstemcheck
-                param_details['StemCheck_Time'] = Functions.paramstemchecktime
-                param_details['Language'] = Functions.paramlanguage
-                param_list.append(param_details)
+            param_list = []
 
-            with open(Functions.pathtoparam + Functions.pathseparator +
+            param_details = {}
+            param_details['Auto_Update'] = parameter[0]
+            param_details['Version'] = parameter[1]
+            param_details['Update_available'] = \
+                parameter[2]
+            param_details['Use_GPG_Encr'] = parameter[3]
+            param_details['Use_GPG_Sign'] = parameter[4]
+            param_details['Platform'] = parameter[5]
+            param_details['GPG_Path'] = parameter[6]
+            param_details['Language'] = parameter[7]
+            param_list.append(param_details)
+
+            with open(Secondary_Functions.dir_para +
+                      Secondary_Functions.path_separator +
                       'Param.json', "w") as file:
                 json.dump(param_list, file, indent=1, sort_keys=True)
 
-            if path.exists(Functions.torrcfilepath) is False:
-                Functions.torrcfound = False
-            else:
-                Functions.torrcfound = True
-
         except Exception as exc:
-            Functions.WriteLog(self, exc)
+            Secondary_Functions.WriteLog(self, exc)
 
     def Read_File(self, file):
         try:

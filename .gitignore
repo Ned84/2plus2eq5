@@ -7,6 +7,9 @@ ChangelogRecent.txt
 __pycache__
 .pytest_cache
 ssslog.txt
+Param.json
+param
+logs
 
 # Install Files
 build

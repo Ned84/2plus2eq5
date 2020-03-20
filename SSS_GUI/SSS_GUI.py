@@ -94,7 +94,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__()
 
-        param_details = sss.Secondary_Functions.Init_Param_GUI(self, version)
+        param_details = sss.Secondary_Functions.Init_Param_GUI(self, version, Ui_MainWindow.gpg_path)
         Ui_MainWindow.auto_update = param_details['Auto_Update']
         Ui_MainWindow.update_avail = param_details['Update_available']
         Ui_MainWindow.use_gpg_encrypt = param_details['Use_GPG_Encr']
@@ -104,19 +104,21 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
         try:
             def UpdateCheck():
-                link = ("https://github.com/Ned84/"
-                        "SSS_Shamirs_Secret_Sharing/blob/master/"
-                        "VERSION.md")
-                url = request.urlopen(link)
-                readurl = url.read()
-                text = readurl.decode(encoding='utf-8', errors='ignore')
-                stringindex = text.find("SSS-Version")
+                # link = ("https://github.com/Ned84/"
+                #         "SSS_Shamirs_Secret_Sharing/blob/master/"
+                #         "VERSION.md")
+                # url = request.urlopen(link)
+                # readurl = url.read()
+                # text = readurl.decode(encoding='utf-8', errors='ignore')
+                # stringindex = text.find("SSS-Version")
 
-                if stringindex != -1:
-                    Ui_MainWindow.versionnew = text[stringindex +
-                                                    13:]
-                    Ui_MainWindow.versionnew = \
-                        Ui_MainWindow.versionnew.replace('_', '.')
+                # if stringindex != -1:
+                #     Ui_MainWindow.versionnew = text[stringindex +
+                #                                     13:]
+                #     Ui_MainWindow.versionnew = \
+                #         Ui_MainWindow.versionnew.replace('_', '.')
+
+                Ui_MainWindow.versionnew = "0.2"
 
                 if version < Ui_MainWindow.versionnew:
                     Ui_MainWindow.serverconnection = True
@@ -126,9 +128,23 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                     Ui_MainWindow.serverconnection = True
                     Ui_MainWindow.update_avail = False
 
+                param_details = []
+                param_details.append(Ui_MainWindow.auto_update)
+                param_details.append(version)
+                param_details.append(Ui_MainWindow.update_avail)
+                param_details.append(Ui_MainWindow.use_gpg_encrypt)
+                param_details.append(Ui_MainWindow.use_gpg_sign)
+                param_details.append(sss.Secondary_Functions.platform)
+                param_details.append(Ui_MainWindow.gpg_path)
+                param_details.append(Ui_MainWindow.language)
+
+                sss.Secondary_Functions.WriteSettingsToJson(self, param_details)
+
             if Ui_MainWindow.auto_update is True:
                 urlthread = threading.Thread(target=UpdateCheck, daemon=True)
                 urlthread.start()
+
+            
 
         except Exception:
             Ui_MainWindow.update_avail = False
@@ -283,6 +299,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
         self.total_shares_spinBox.setValue(sss.SSS_Functions.total_shares)
         self.min_shares_spinBox.setValue(sss.SSS_Functions.min_shares)
+
+        if Ui_MainWindow.update_avail is True:
+            self.statusbar.showMessage("Update available. Help -> Update")
 
         @pyqtSlot()
         def OpenLoadFilePicker():
@@ -527,9 +546,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             self.statusbar.showMessage("")
             if self.mersenne_comboBox.currentText() != "Default":
                 if int(self.mersenne_comboBox.currentText()) > 1400000:
-                    self.statusbar.showMessage("High Encryption Lvls can take a while to process")
-            
-            
+                    self.statusbar.showMessage(
+                        "High Encryption Lvls can take a while to process")
 
         self.load_Button.clicked.connect(OpenLoadFilePicker)
         self.create_start_Button.clicked.connect(Start_Creating_Shares)
@@ -541,7 +559,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.actionAbout.triggered.connect(OpenDialogAbout)
         self.actionWikipedia.triggered.connect(Wiki_Clipboard)
         self.actionUpdate.triggered.connect(OpenDialogUpdate)
-        self.mersenne_comboBox.currentTextChanged.connect(Changed_Mersenne_Combobox)
+        self.mersenne_comboBox.currentTextChanged.connect(
+            Changed_Mersenne_Combobox)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -839,7 +858,19 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
             Ui_MainWindow.use_gpg_encrypt =\
                 self.use_gpg_encrypt_Checkbox.isChecked()
             Ui_MainWindow.use_gpg_sign = self.use_gpg_sign_Checkbox.isChecked()
-            sss.Secondary_Functions.WriteSettingsToJson(self)
+            Ui_MainWindow.language = self.language_comboBox.currentText()
+
+            param_details = []
+            param_details.append(Ui_MainWindow.auto_update)
+            param_details.append(version)
+            param_details.append(Ui_MainWindow.update_avail)
+            param_details.append(Ui_MainWindow.use_gpg_encrypt)
+            param_details.append(Ui_MainWindow.use_gpg_sign)
+            param_details.append(sss.Secondary_Functions.platform)
+            param_details.append(Ui_MainWindow.gpg_path)
+            param_details.append(Ui_MainWindow.language)
+
+            sss.Secondary_Functions.WriteSettingsToJson(self, param_details)
             SettingsDialog.close()
 
         @pyqtSlot()
@@ -1064,6 +1095,20 @@ class Ui_UpdateDialog(QtWidgets.QWidget):
 
         self.retranslateUi(UpdateDialog)
         QtCore.QMetaObject.connectSlotsByName(UpdateDialog)
+
+        Ui_MainWindow.update_avail = False
+
+        param_details = []
+        param_details.append(Ui_MainWindow.auto_update)
+        param_details.append(version)
+        param_details.append(Ui_MainWindow.update_avail)
+        param_details.append(Ui_MainWindow.use_gpg_encrypt)
+        param_details.append(Ui_MainWindow.use_gpg_sign)
+        param_details.append(sss.Secondary_Functions.platform)
+        param_details.append(Ui_MainWindow.gpg_path)
+        param_details.append(Ui_MainWindow.language)
+
+        sss.Secondary_Functions.WriteSettingsToJson(self, param_details)
 
         @pyqtSlot()
         def StartUpdateProc():
