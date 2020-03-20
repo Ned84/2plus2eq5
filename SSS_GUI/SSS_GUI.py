@@ -20,7 +20,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import platform
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSlot
@@ -37,6 +36,7 @@ import os
 import webbrowser
 import threading
 from urllib import request
+from os import path
 
 version = "0.1"
 
@@ -94,7 +94,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__()
 
-        param_details = sss.Secondary_Functions.Init_Param_GUI(self, version, Ui_MainWindow.gpg_path)
+        param_details = sss.Secondary_Functions.Init_Param_GUI(
+            self, version, Ui_MainWindow.gpg_path)
         Ui_MainWindow.auto_update = param_details['Auto_Update']
         Ui_MainWindow.update_avail = param_details['Update_available']
         Ui_MainWindow.use_gpg_encrypt = param_details['Use_GPG_Encr']
@@ -104,21 +105,19 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
         try:
             def UpdateCheck():
-                # link = ("https://github.com/Ned84/"
-                #         "SSS_Shamirs_Secret_Sharing/blob/master/"
-                #         "VERSION.md")
-                # url = request.urlopen(link)
-                # readurl = url.read()
-                # text = readurl.decode(encoding='utf-8', errors='ignore')
-                # stringindex = text.find("SSS-Version")
+                link = ("https://github.com/Ned84/"
+                        "SSS_Shamirs_Secret_Sharing/blob/master/"
+                        "VERSION.md")
+                url = request.urlopen(link)
+                readurl = url.read()
+                text = readurl.decode(encoding='utf-8', errors='ignore')
+                stringindex = text.find("SSS-Version")
 
-                # if stringindex != -1:
-                #     Ui_MainWindow.versionnew = text[stringindex +
-                #                                     13:]
-                #     Ui_MainWindow.versionnew = \
-                #         Ui_MainWindow.versionnew.replace('_', '.')
-
-                Ui_MainWindow.versionnew = "0.2"
+                if stringindex != -1:
+                    Ui_MainWindow.versionnew = text[stringindex +
+                                                    13:]
+                    Ui_MainWindow.versionnew = \
+                        Ui_MainWindow.versionnew.replace('_', '.')
 
                 if version < Ui_MainWindow.versionnew:
                     Ui_MainWindow.serverconnection = True
@@ -138,13 +137,12 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                 param_details.append(Ui_MainWindow.gpg_path)
                 param_details.append(Ui_MainWindow.language)
 
-                sss.Secondary_Functions.WriteSettingsToJson(self, param_details)
+                sss.Secondary_Functions.WriteSettingsToJson(
+                    self, param_details)
 
             if Ui_MainWindow.auto_update is True:
                 urlthread = threading.Thread(target=UpdateCheck, daemon=True)
                 urlthread.start()
-
-            
 
         except Exception:
             Ui_MainWindow.update_avail = False
@@ -756,7 +754,6 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
         self.gpg_choose_Button.setGeometry(QtCore.QRect(150, 70, 90, 28))
         self.gpg_choose_Button.setObjectName("gpg_choose_Button")
 
-
         try:
             # List keyrings
             gpg = gnupg.GPG(gnupghome=Ui_MainWindow.gpg_path)
@@ -876,57 +873,65 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
         @pyqtSlot()
         def ChooseGPGPath():
             try:
-                path = QFileDialog.getExistingDirectory(
+                dial_path = QFileDialog.getExistingDirectory(
                     self, "Select Tor Directory")
-                if path:
-                    self.gpg_path_lineedit.setText(path)
+                if dial_path:
+                    if path.exists(
+                        dial_path +
+                        sss.Secondary_Functions.path_separator +
+                        'pubring.kbx'
+                         ) is True:
 
-                    # List keyrings
-                    gpg = gnupg.GPG(gnupghome=path)
-                    public_keys = gpg.list_keys()
-                    private_keys = gpg.list_keys(True)
+                        self.gpg_path_lineedit.setText(dial_path)
 
-                    Ui_MainWindow.gpg_pub_keyring = []
-                    Ui_MainWindow.gpg_priv_keyring = []
-                    self.gpg_public_comboBox.clear()
-                    self.gpg_private_comboBox.clear()
+                        # List keyrings
+                        gpg = gnupg.GPG(gnupghome=dial_path)
+                        public_keys = gpg.list_keys()
+                        private_keys = gpg.list_keys(True)
 
-                    self.gpg_public_comboBox.addItem("No Key chosen")
-                    self.gpg_private_comboBox.addItem("No Key chosen")
-
-                    for sub, value in vars(public_keys).items():
-                        if sub == "uids":
-                            for id in value:
-                                Ui_MainWindow.gpg_pub_keyring.append(id)
-
-                    for sub, value in vars(private_keys).items():
-                        if sub == "uids":
-                            for id in value:
-                                Ui_MainWindow.gpg_priv_keyring.append(id)
-
-                    if len(Ui_MainWindow.gpg_priv_keyring) == 0:
-                        self.gpg_private_comboBox.clear()
-                        self.gpg_private_comboBox.addItem("No Keys found")
-
-                    if len(Ui_MainWindow.gpg_pub_keyring) == 0:
+                        Ui_MainWindow.gpg_pub_keyring = []
+                        Ui_MainWindow.gpg_priv_keyring = []
                         self.gpg_public_comboBox.clear()
-                        self.gpg_public_comboBox.addItem("No Keys found")
+                        self.gpg_private_comboBox.clear()
 
-                    for i, key in enumerate(Ui_MainWindow.gpg_pub_keyring):
-                        self.gpg_public_comboBox.addItem(key)
-                        if key == Ui_MainWindow.gpg_chosen_public_key:
-                            self.gpg_public_comboBox.setCurrentIndex(i + 1)
+                        self.gpg_public_comboBox.addItem("No Key chosen")
+                        self.gpg_private_comboBox.addItem("No Key chosen")
 
-                    if Ui_MainWindow.gpg_chosen_public_key == "":
-                        self.gpg_public_comboBox.setCurrentIndex(0)
+                        for sub, value in vars(public_keys).items():
+                            if sub == "uids":
+                                for id in value:
+                                    Ui_MainWindow.gpg_pub_keyring.append(id)
 
-                    for i, key in enumerate(Ui_MainWindow.gpg_priv_keyring):
-                        self.gpg_private_comboBox.addItem(key)
-                        if key == Ui_MainWindow.gpg_chosen_private_key:
-                            self.gpg_private_comboBox.setCurrentIndex(i + 1)
+                        for sub, value in vars(private_keys).items():
+                            if sub == "uids":
+                                for id in value:
+                                    Ui_MainWindow.gpg_priv_keyring.append(id)
 
-                    if Ui_MainWindow.gpg_chosen_public_key == "":
-                        self.gpg_public_comboBox.setCurrentIndex(0)
+                        if len(Ui_MainWindow.gpg_priv_keyring) == 0:
+                            self.gpg_private_comboBox.clear()
+                            self.gpg_private_comboBox.addItem("No Keys found")
+
+                        if len(Ui_MainWindow.gpg_pub_keyring) == 0:
+                            self.gpg_public_comboBox.clear()
+                            self.gpg_public_comboBox.addItem("No Keys found")
+
+                        for i, key in enumerate(Ui_MainWindow.gpg_pub_keyring):
+                            self.gpg_public_comboBox.addItem(key)
+                            if key == Ui_MainWindow.gpg_chosen_public_key:
+                                self.gpg_public_comboBox.setCurrentIndex(i + 1)
+
+                        if Ui_MainWindow.gpg_chosen_public_key == "":
+                            self.gpg_public_comboBox.setCurrentIndex(0)
+
+                        for i, key in enumerate(
+                             Ui_MainWindow.gpg_priv_keyring):
+                            self.gpg_private_comboBox.addItem(key)
+                            if key == Ui_MainWindow.gpg_chosen_private_key:
+                                self.gpg_private_comboBox.setCurrentIndex(
+                                    i + 1)
+
+                        if Ui_MainWindow.gpg_chosen_public_key == "":
+                            self.gpg_public_comboBox.setCurrentIndex(0)
 
             except Exception as exc:
                 sss.Secondary_Functions.WriteLog(self, exc)
@@ -1020,7 +1025,6 @@ class Ui_AboutDialog(QtWidgets.QWidget):
         font = Fonts.Choose_Fonts(self, False, 8, "MS Shell Dlg 2")
         self.label_2.setFont(font)
         self.label_2.setObjectName("label_2")
-
 
         self.trans = QtCore.QTranslator(self)
 

@@ -230,7 +230,7 @@ class SSS_Functions(object):
                     i = 0
                 i += 1
 
-            if "BEGIN PGP MESSAGE" in secret_string[:25]:
+            if "BEGIN PGP" in secret_string[:25]:
                 file = folder + "/Combined_Shares.txt.asc"
             else:
                 file = folder + "/Combined_Shares.txt"
@@ -243,6 +243,8 @@ class SSS_Functions(object):
 
         except Exception as exc:
             Secondary_Functions.WriteLog(self, exc)
+            if path.exists(file):
+                os.remove(file)
             return succeeded
 
 
@@ -291,7 +293,8 @@ class Secondary_Functions(object):
 
                     data = [{"Version": version, "Auto_Update": False,
                             "Update_available": False, "Use_GPG_Encr": False,
-                             "Use_GPG_Sign": False, "Platform": Secondary_Functions.platform,
+                             "Use_GPG_Sign": False,
+                             "Platform": Secondary_Functions.platform,
                              "GPG_Path": gpg_path, "Language": ""}]
 
                     json.dump(data, file, indent=1, sort_keys=True)
