@@ -37,6 +37,7 @@ import webbrowser
 import threading
 from urllib import request
 from os import path
+import subprocess
 
 version = "0.1"
 
@@ -86,7 +87,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     use_gpg_sign = False
     gpg_chosen_public_key = "No Key chosen"
     gpg_chosen_private_key = "No Key chosen"
-    gpg_path = usr_path + '\\AppData\\Roaming\\gnupg'
+
+    test = sss.Secondary_Functions.platform
+
+    gpg_path = ""
     language = ""
 
     SSS_Resources.qInitResources()
@@ -96,11 +100,18 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
         param_details = sss.Secondary_Functions.Init_Param_GUI(
             self, version, Ui_MainWindow.gpg_path)
+
+        if sss.Secondary_Functions.platform == "Windows":
+            Ui_MainWindow.gpg_path = Ui_MainWindow.usr_path + '\\AppData\\Roaming\\gnupg'
+        else:
+            Ui_MainWindow.gpg_path = Ui_MainWindow.usr_path + '/.gnupg'
+
         Ui_MainWindow.auto_update = param_details['Auto_Update']
         Ui_MainWindow.update_avail = param_details['Update_available']
         Ui_MainWindow.use_gpg_encrypt = param_details['Use_GPG_Encr']
         Ui_MainWindow.use_gpg_sign = param_details['Use_GPG_Sign']
-        Ui_MainWindow.gpg_path = param_details['GPG_Path']
+        if param_details['GPG_Path'] != "":
+            Ui_MainWindow.gpg_path = param_details['GPG_Path']
         Ui_MainWindow.language = param_details['Language']
 
         try:
@@ -421,7 +432,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                                     self.total_shares_spinBox.value()) is True:
                                 self.statusbar.showMessage(
                                     "Shares successfully created")
-                                os.startfile(path + "/Shares")
+                                if sss.Secondary_Functions.platform == "Windows":
+                                    os.startfile(path + "/Shares")
+                                else:
+                                    subprocess.Popen(["xdg-open", path + "/Shares"])
                     else:
                         self.statusbar.showMessage(
                             "Min. shares have to be less than total")
@@ -453,7 +467,11 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                             path):
                         self.statusbar.showMessage(
                             "Shares successfully combined")
-                        os.startfile(path)
+
+                        if sss.Secondary_Functions.platform == "Windows":
+                            os.startfile(path)
+                        else:
+                            subprocess.Popen(["xdg-open", path])
                     else:
                         self.statusbar.showMessage(
                             "Error: Shares not combined")
@@ -1022,7 +1040,7 @@ class Ui_AboutDialog(QtWidgets.QWidget):
         self.label.setObjectName("label")
         self.label_2 = QtWidgets.QLabel(AboutDialog)
         self.label_2.setGeometry(QtCore.QRect(190, 50, 190, 130))
-        font = Fonts.Choose_Fonts(self, False, 8, "MS Shell Dlg 2")
+        font = Fonts.Choose_Fonts(self, False, 8, "Arial")
         self.label_2.setFont(font)
         self.label_2.setObjectName("label_2")
 

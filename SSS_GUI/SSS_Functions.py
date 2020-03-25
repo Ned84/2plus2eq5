@@ -413,7 +413,7 @@ class Secondary_Functions(object):
                 status = gpg.encrypt_file(
                     file,
                     recipients=pub_key,
-                    sign=pub_key,
+                    sign=priv_key,
                     output=filename + '.asc')
 
             print('ok: ', status.ok)
@@ -427,9 +427,15 @@ class Secondary_Functions(object):
         try:
             succeeded = False
             path = folder + "/Shares"
-            overview_text = "Security Level:\t" + str(sec_lvl) + "\n" +\
-                            "Minimum Shares:\t" + str(minimum) + "\n" +\
-                            "Total Shares:\t" + str(total)
+            if Secondary_Functions.platform == "Windows":
+                overview_text = "Security Level:\t" + str(sec_lvl) + "\n" +\
+                                "Minimum Shares:\t" + str(minimum) + "\n" +\
+                                "Total Shares:\t" + str(total)
+            else:
+                overview_text = "Security Level:\t" + str(sec_lvl) + "\n" +\
+                                "Minimum Shares:\t" + str(minimum) + "\n" +\
+                                "Total Shares:\t\t" + str(total)
+
             if not os.path.exists(path):
                 os.makedirs(path)
             else:
