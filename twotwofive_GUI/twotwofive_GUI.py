@@ -102,7 +102,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             self, version, Ui_MainWindow.gpg_path)
 
         if twotwofive.Secondary_Functions.platform == "Windows":
-            Ui_MainWindow.gpg_path = Ui_MainWindow.usr_path + '\\AppData\\Roaming\\gnupg'
+            Ui_MainWindow.gpg_path =\
+                Ui_MainWindow.usr_path + '\\AppData\\Roaming\\gnupg'
         else:
             Ui_MainWindow.gpg_path = Ui_MainWindow.usr_path + '/.gnupg'
 
@@ -307,7 +308,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.tabWidget.setCurrentWidget(self.tabWidget.findChild(
             QtWidgets.QWidget, "create_tab"))
 
-        self.total_shares_spinBox.setValue(twotwofive.SSS_Functions.total_shares)
+        self.total_shares_spinBox.setValue(
+            twotwofive.SSS_Functions.total_shares)
         self.min_shares_spinBox.setValue(twotwofive.SSS_Functions.min_shares)
 
         if Ui_MainWindow.update_avail is True:
@@ -346,7 +348,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
                 if i >= self.min_shares_spinBox.value():
                     if fileNames[0]:
-                        twotwofive.Secondary_Functions.share_fileNames = fileNames
+                        twotwofive.Secondary_Functions.share_fileNames =\
+                            fileNames
                         for name in fileNames[0]:
                             chosen_filenames += name + " "
                         self.save_lineEdit.setText(chosen_filenames)
@@ -372,11 +375,12 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                                "No Key chosen" and\
                                 Ui_MainWindow.gpg_chosen_public_key !=\
                                "No Key chosen":
-                                twotwofive.Secondary_Functions.Sign_Encrypt_File(
-                                    self, Ui_MainWindow.gpg_path,
-                                    self.load_lineEdit.text(),
-                                    Ui_MainWindow.gpg_chosen_private_key,
-                                    Ui_MainWindow.gpg_chosen_public_key)
+                                twotwofive.Secondary_Functions.\
+                                    Sign_Encrypt_File(
+                                     self, Ui_MainWindow.gpg_path,
+                                     self.load_lineEdit.text(),
+                                     Ui_MainWindow.gpg_chosen_private_key,
+                                     Ui_MainWindow.gpg_chosen_public_key)
                             else:
                                 self.statusbar.showMessage(
                                     "Private or public key not specified")
@@ -386,11 +390,12 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                             if Ui_MainWindow.use_gpg_encrypt is True:
                                 if Ui_MainWindow.gpg_chosen_public_key !=\
                                    "No Key chosen":
-                                    twotwofive.Secondary_Functions.Encrypt_File(
-                                        self,
-                                        Ui_MainWindow.gpg_path,
-                                        self.load_lineEdit.text(),
-                                        Ui_MainWindow.gpg_chosen_public_key)
+                                    twotwofive.Secondary_Functions.\
+                                        Encrypt_File(
+                                         self,
+                                         Ui_MainWindow.gpg_path,
+                                         self.load_lineEdit.text(),
+                                         Ui_MainWindow.gpg_chosen_public_key)
                                 else:
                                     self.statusbar.showMessage(
                                         "Public key not specified")
@@ -411,11 +416,13 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                         if succeeded is True:
                             if Ui_MainWindow.use_gpg_encrypt is True or\
                                Ui_MainWindow.use_gpg_sign is True:
-                                file = twotwofive.Secondary_Functions.Read_File(
-                                    self, self.load_lineEdit.text() + '.asc')
+                                file =\
+                                    twotwofive.Secondary_Functions.Read_File(
+                                     self, self.load_lineEdit.text() + '.asc')
                             else:
-                                file = twotwofive.Secondary_Functions.Read_File(
-                                    self, self.load_lineEdit.text())
+                                file =\
+                                    twotwofive.Secondary_Functions.Read_File(
+                                     self, self.load_lineEdit.text())
 
                             shares = twotwofive.SSS_Functions.Share_Creation(
                                 self,
@@ -433,10 +440,12 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                                     self.total_shares_spinBox.value()) is True:
                                 self.statusbar.showMessage(
                                     "Shares successfully created")
-                                if twotwofive.Secondary_Functions.platform == "Windows":
+                                if twotwofive.Secondary_Functions.platform ==\
+                                   "Windows":
                                     os.startfile(path + "/Shares")
                                 else:
-                                    subprocess.Popen(["xdg-open", path + "/Shares"])
+                                    subprocess.Popen(
+                                        ["xdg-open", path + "/Shares"])
                     else:
                         self.statusbar.showMessage(
                             "Min. shares have to be less than total")
@@ -469,7 +478,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                         self.statusbar.showMessage(
                             "Shares successfully combined")
 
-                        if twotwofive.Secondary_Functions.platform == "Windows":
+                        if twotwofive.Secondary_Functions.platform ==\
+                           "Windows":
                             os.startfile(path)
                         else:
                             subprocess.Popen(["xdg-open", path])
@@ -484,12 +494,14 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         @pyqtSlot()
         def TotalSprinBoxChanged():
             self.statusbar.showMessage("")
-            twotwofive.SSS_Functions.total_shares = self.total_shares_spinBox.value()
+            twotwofive.SSS_Functions.total_shares =\
+                self.total_shares_spinBox.value()
 
         @pyqtSlot()
         def MinSprinBoxChanged():
             self.statusbar.showMessage("")
-            twotwofive.SSS_Functions.min_shares = self.min_shares_spinBox.value()
+            twotwofive.SSS_Functions.min_shares =\
+                self.min_shares_spinBox.value()
 
         @pyqtSlot()
         def OpenDialogAbout():
@@ -886,7 +898,8 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
             param_details.append(Ui_MainWindow.gpg_path)
             param_details.append(Ui_MainWindow.language)
 
-            twotwofive.Secondary_Functions.WriteSettingsToJson(self, param_details)
+            twotwofive.Secondary_Functions.WriteSettingsToJson(
+                self, param_details)
             SettingsDialog.close()
 
         @pyqtSlot()
