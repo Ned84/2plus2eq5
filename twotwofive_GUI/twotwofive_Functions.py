@@ -302,12 +302,12 @@ class Secondary_Functions(object):
             if path.exists(
                 Secondary_Functions.dir_logs +
                 Secondary_Functions.path_separator +
-                    'ssslog.txt') is False:
+                    'ttflog.txt') is False:
 
                 with open(
                     Secondary_Functions.dir_logs +
                     Secondary_Functions.path_separator +
-                        'ssslog.txt', "w+") as file:
+                        'ttflog.txt', "w+") as file:
                     pass
 
             return Secondary_Functions.GetSettingsFromJson(self)
@@ -484,7 +484,7 @@ class Secondary_Functions(object):
         # in a try/catch block
         with open(Secondary_Functions.dir_logs +
                   Secondary_Functions.path_separator +
-                  'ssslog.txt', "a") as logfile:
+                  'ttflog.txt', "a") as logfile:
             dt = datetime.datetime.now()
             dtwithoutmill = dt.replace(microsecond=0)
             logfile.write("{0}".format(dtwithoutmill))

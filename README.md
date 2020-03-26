@@ -1,2 +1,2 @@
-# SSS_Shamirs_Secret_Sharing
+# Two Plus Two Eq Five
 GUI for Shamir's secret sharing scheme

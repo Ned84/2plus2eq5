@@ -6,7 +6,7 @@ ChangelogRecent.txt
 # Unit-test and debug
 __pycache__
 .pytest_cache
-ssslog.txt
+ttflog.txt
 Param.json
 param
 logs
