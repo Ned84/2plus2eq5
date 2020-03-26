@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-*** S-S-S Shamir's Secret Sharing ***
+*** Two Plus Two Eq 5 ***
 "Easily share secrets in parts and reconstruct them again from
 an minimum amount of parts.
 Easily switch the Tor-Exit-Node Destination Country in
@@ -27,8 +27,8 @@ from PyQt5.QtWidgets import QFileDialog
 from PyQt5.Qt import QApplication
 
 
-import SSS_Functions as sss
-import SSS_Resources
+import twotwofive_Functions as twotwofive
+import twotwofive_Resources
 
 import gnupg
 from pathlib import Path
@@ -47,7 +47,7 @@ class Fonts():
     def Choose_Fonts(self, bold, size, font_type):
         font = QtGui.QFont()
         font.setFamily(font_type)
-        if sss.Secondary_Functions.platform == "Windows":
+        if twotwofive.Secondary_Functions.platform == "Windows":
             if bold is True:
                 font.setBold(True)
                 font.setWeight(75)
@@ -88,20 +88,20 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     gpg_chosen_public_key = "No Key chosen"
     gpg_chosen_private_key = "No Key chosen"
 
-    test = sss.Secondary_Functions.platform
+    test = twotwofive.Secondary_Functions.platform
 
     gpg_path = ""
     language = ""
 
-    SSS_Resources.qInitResources()
+    twotwofive_Resources.qInitResources()
 
     def __init__(self, *args, **kwargs):
         super().__init__()
 
-        param_details = sss.Secondary_Functions.Init_Param_GUI(
+        param_details = twotwofive.Secondary_Functions.Init_Param_GUI(
             self, version, Ui_MainWindow.gpg_path)
 
-        if sss.Secondary_Functions.platform == "Windows":
+        if twotwofive.Secondary_Functions.platform == "Windows":
             Ui_MainWindow.gpg_path = Ui_MainWindow.usr_path + '\\AppData\\Roaming\\gnupg'
         else:
             Ui_MainWindow.gpg_path = Ui_MainWindow.usr_path + '/.gnupg'
@@ -117,16 +117,17 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         try:
             def UpdateCheck():
                 link = ("https://github.com/Ned84/"
-                        "SSS_Shamirs_Secret_Sharing/blob/master/"
+                        "2plus2eq5/blob/master/"
                         "VERSION.md")
                 url = request.urlopen(link)
                 readurl = url.read()
                 text = readurl.decode(encoding='utf-8', errors='ignore')
-                stringindex = text.find("SSS-Version")
+
+                stringindex = text.find("2plus2eq5-Version")
 
                 if stringindex != -1:
                     Ui_MainWindow.versionnew = text[stringindex +
-                                                    13:]
+                                                    19:]
                     Ui_MainWindow.versionnew = \
                         Ui_MainWindow.versionnew.replace('_', '.')
 
@@ -144,11 +145,11 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                 param_details.append(Ui_MainWindow.update_avail)
                 param_details.append(Ui_MainWindow.use_gpg_encrypt)
                 param_details.append(Ui_MainWindow.use_gpg_sign)
-                param_details.append(sss.Secondary_Functions.platform)
+                param_details.append(twotwofive.Secondary_Functions.platform)
                 param_details.append(Ui_MainWindow.gpg_path)
                 param_details.append(Ui_MainWindow.language)
 
-                sss.Secondary_Functions.WriteSettingsToJson(
+                twotwofive.Secondary_Functions.WriteSettingsToJson(
                     self, param_details)
 
             if Ui_MainWindow.auto_update is True:
@@ -175,7 +176,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.tabWidget.setTabShape(QtWidgets.QTabWidget.Rounded)
         self.tabWidget.setIconSize(QtCore.QSize(20, 20))
         self.tabWidget.setObjectName("tabWidget")
-        if sss.Secondary_Functions.platform == "Windows":
+        if twotwofive.Secondary_Functions.platform == "Windows":
             font = "8pt Arial"
         else:
             font = "10pt Arial"
@@ -254,7 +255,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.mersenne_comboBox.setObjectName("mersenne_comboBox")
         self.mersenne_comboBox.setGeometry(QtCore.QRect(10, 80, 230, 22))
         self.mersenne_comboBox.addItem("Default")
-        for number in sss.SSS_Functions.prime_array:
+        for number in twotwofive.SSS_Functions.prime_array:
             self.mersenne_comboBox.addItem(str(number))
 
         self.combine_mersenne_Label = QtWidgets.QLabel(
@@ -269,7 +270,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             "combine_mersenne_comboBox")
         self.combine_mersenne_comboBox.setGeometry(
             QtCore.QRect(10, 80, 230, 22))
-        for number in sss.SSS_Functions.prime_array:
+        for number in twotwofive.SSS_Functions.prime_array:
             self.combine_mersenne_comboBox.addItem(str(number))
 
         MainWindow.setCentralWidget(self.centralwidget)
@@ -306,8 +307,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.tabWidget.setCurrentWidget(self.tabWidget.findChild(
             QtWidgets.QWidget, "create_tab"))
 
-        self.total_shares_spinBox.setValue(sss.SSS_Functions.total_shares)
-        self.min_shares_spinBox.setValue(sss.SSS_Functions.min_shares)
+        self.total_shares_spinBox.setValue(twotwofive.SSS_Functions.total_shares)
+        self.min_shares_spinBox.setValue(twotwofive.SSS_Functions.min_shares)
 
         if Ui_MainWindow.update_avail is True:
             self.statusbar.showMessage("Update available. Help -> Update")
@@ -325,7 +326,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                     self.load_lineEdit.setText(fileName[0])
 
             except Exception as exc:
-                sss.Secondary_Functions.WriteLog(self, exc)
+                twotwofive.Secondary_Functions.WriteLog(self, exc)
 
         @pyqtSlot()
         def OpenSaveFilePicker():
@@ -345,7 +346,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
                 if i >= self.min_shares_spinBox.value():
                     if fileNames[0]:
-                        sss.Secondary_Functions.share_fileNames = fileNames
+                        twotwofive.Secondary_Functions.share_fileNames = fileNames
                         for name in fileNames[0]:
                             chosen_filenames += name + " "
                         self.save_lineEdit.setText(chosen_filenames)
@@ -354,7 +355,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                         "Loaded Shares have to be >= minimum shares")
 
             except Exception as exc:
-                sss.Secondary_Functions.WriteLog(self, exc)
+                twotwofive.Secondary_Functions.WriteLog(self, exc)
 
         @pyqtSlot()
         def Start_Creating_Shares():
@@ -371,7 +372,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                                "No Key chosen" and\
                                 Ui_MainWindow.gpg_chosen_public_key !=\
                                "No Key chosen":
-                                sss.Secondary_Functions.Sign_Encrypt_File(
+                                twotwofive.Secondary_Functions.Sign_Encrypt_File(
                                     self, Ui_MainWindow.gpg_path,
                                     self.load_lineEdit.text(),
                                     Ui_MainWindow.gpg_chosen_private_key,
@@ -385,7 +386,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                             if Ui_MainWindow.use_gpg_encrypt is True:
                                 if Ui_MainWindow.gpg_chosen_public_key !=\
                                    "No Key chosen":
-                                    sss.Secondary_Functions.Encrypt_File(
+                                    twotwofive.Secondary_Functions.Encrypt_File(
                                         self,
                                         Ui_MainWindow.gpg_path,
                                         self.load_lineEdit.text(),
@@ -397,7 +398,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                             if Ui_MainWindow.use_gpg_sign is True:
                                 if Ui_MainWindow.gpg_chosen_private_key !=\
                                    "No Key chosen":
-                                    sss.Secondary_Functions.Sign_File(
+                                    twotwofive.Secondary_Functions.Sign_File(
                                         self,
                                         Ui_MainWindow.gpg_path,
                                         self.load_lineEdit.text(),
@@ -410,29 +411,29 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                         if succeeded is True:
                             if Ui_MainWindow.use_gpg_encrypt is True or\
                                Ui_MainWindow.use_gpg_sign is True:
-                                file = sss.Secondary_Functions.Read_File(
+                                file = twotwofive.Secondary_Functions.Read_File(
                                     self, self.load_lineEdit.text() + '.asc')
                             else:
-                                file = sss.Secondary_Functions.Read_File(
+                                file = twotwofive.Secondary_Functions.Read_File(
                                     self, self.load_lineEdit.text())
 
-                            shares = sss.SSS_Functions.Share_Creation(
+                            shares = twotwofive.SSS_Functions.Share_Creation(
                                 self,
                                 file,
                                 self.mersenne_comboBox.currentText())
                             path = self.load_lineEdit.text()
                             path = path[:path.rfind('/')]
 
-                            if sss.Secondary_Functions.Save_Shares(
+                            if twotwofive.Secondary_Functions.Save_Shares(
                                     self,
                                     path,
                                     shares,
-                                    sss.SSS_Functions.security_lvl,
+                                    twotwofive.SSS_Functions.security_lvl,
                                     self.min_shares_spinBox.value(),
                                     self.total_shares_spinBox.value()) is True:
                                 self.statusbar.showMessage(
                                     "Shares successfully created")
-                                if sss.Secondary_Functions.platform == "Windows":
+                                if twotwofive.Secondary_Functions.platform == "Windows":
                                     os.startfile(path + "/Shares")
                                 else:
                                     subprocess.Popen(["xdg-open", path + "/Shares"])
@@ -445,22 +446,22 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                     succeeded = False
 
             except Exception as exc:
-                sss.Secondary_Functions.WriteLog(self, exc)
+                twotwofive.Secondary_Functions.WriteLog(self, exc)
 
         @pyqtSlot()
         def Start_Combining_Shares():
             try:
                 self.statusbar.showMessage("")
                 if(self.save_lineEdit.text() != ""):
-                    shares = sss.Secondary_Functions.Load_Shares(
+                    shares = twotwofive.Secondary_Functions.Load_Shares(
                         self,
-                        sss.Secondary_Functions.share_fileNames)
+                        twotwofive.Secondary_Functions.share_fileNames)
 
-                    path = sss.Secondary_Functions.share_fileNames[0][0]
+                    path = twotwofive.Secondary_Functions.share_fileNames[0][0]
                     path = str(path)
                     path = path[:path.rfind('/')]
 
-                    if sss.SSS_Functions.Share_Combining(
+                    if twotwofive.SSS_Functions.Share_Combining(
                             self, self.combine_mersenne_comboBox.currentText(),
                             self.min_shares_spinBox.value(),
                             shares,
@@ -468,7 +469,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                         self.statusbar.showMessage(
                             "Shares successfully combined")
 
-                        if sss.Secondary_Functions.platform == "Windows":
+                        if twotwofive.Secondary_Functions.platform == "Windows":
                             os.startfile(path)
                         else:
                             subprocess.Popen(["xdg-open", path])
@@ -478,17 +479,17 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                 else:
                     self.statusbar.showMessage("Error: No shares to load")
             except Exception as exc:
-                sss.Secondary_Functions.WriteLog(self, exc)
+                twotwofive.Secondary_Functions.WriteLog(self, exc)
 
         @pyqtSlot()
         def TotalSprinBoxChanged():
             self.statusbar.showMessage("")
-            sss.SSS_Functions.total_shares = self.total_shares_spinBox.value()
+            twotwofive.SSS_Functions.total_shares = self.total_shares_spinBox.value()
 
         @pyqtSlot()
         def MinSprinBoxChanged():
             self.statusbar.showMessage("")
-            sss.SSS_Functions.min_shares = self.min_shares_spinBox.value()
+            twotwofive.SSS_Functions.min_shares = self.min_shares_spinBox.value()
 
         @pyqtSlot()
         def OpenDialogAbout():
@@ -580,7 +581,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "S-S-S"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "2 + 2 = 5"))
         self.total_shares_label.setText(
             _translate("MainWindow", "Total Shares"))
         self.min_shares_label.setText(
@@ -804,7 +805,7 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
                 self.gpg_public_comboBox.clear()
                 self.gpg_public_comboBox.addItem("No Keys found")
         except Exception as exc:
-            sss.Secondary_Functions.WriteLog(self, exc)
+            twotwofive.Secondary_Functions.WriteLog(self, exc)
 
         self.ok_Button.raise_()
         self.cancel_Button.raise_()
@@ -881,11 +882,11 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
             param_details.append(Ui_MainWindow.update_avail)
             param_details.append(Ui_MainWindow.use_gpg_encrypt)
             param_details.append(Ui_MainWindow.use_gpg_sign)
-            param_details.append(sss.Secondary_Functions.platform)
+            param_details.append(twotwofive.Secondary_Functions.platform)
             param_details.append(Ui_MainWindow.gpg_path)
             param_details.append(Ui_MainWindow.language)
 
-            sss.Secondary_Functions.WriteSettingsToJson(self, param_details)
+            twotwofive.Secondary_Functions.WriteSettingsToJson(self, param_details)
             SettingsDialog.close()
 
         @pyqtSlot()
@@ -896,7 +897,7 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
                 if dial_path:
                     if path.exists(
                         dial_path +
-                        sss.Secondary_Functions.path_separator +
+                        twotwofive.Secondary_Functions.path_separator +
                         'pubring.kbx'
                          ) is True:
 
@@ -952,7 +953,7 @@ class Ui_SettingsDialog(QtWidgets.QWidget):
                             self.gpg_public_comboBox.setCurrentIndex(0)
 
             except Exception as exc:
-                sss.Secondary_Functions.WriteLog(self, exc)
+                twotwofive.Secondary_Functions.WriteLog(self, exc)
 
         self.ok_Button.clicked.connect(OkPressed)
         self.cancel_Button.clicked.connect(SettingsDialog.close)
@@ -1060,7 +1061,7 @@ class Ui_AboutDialog(QtWidgets.QWidget):
         AboutDialog.setWindowTitle(_translate("AboutDialog", "About"))
         self.closeButton.setText(_translate("AboutDialog", "Close"))
         self.label.setText(_translate(
-            "AboutDialog", "Shamir's Secret Sharing"))
+            "AboutDialog", "2 + 2 = 5"))
         string_1 = "Version: "
         string_2 = (_translate("AboutDialog",
                                "Easily share secrets in parts\n"
@@ -1102,7 +1103,7 @@ class Ui_UpdateDialog(QtWidgets.QWidget):
         self.SSS_logo_frame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.SSS_logo_frame.setObjectName("SSS_logo_frame")
         self.label = QtWidgets.QLabel(UpdateDialog)
-        self.label.setGeometry(QtCore.QRect(90, 20, 280, 31))
+        self.label.setGeometry(QtCore.QRect(200, 20, 280, 31))
         self.label2 = QtWidgets.QLabel(UpdateDialog)
         self.label2.setGeometry(QtCore.QRect(170, 60, 301, 131))
         self.label3 = QtWidgets.QLabel(UpdateDialog)
@@ -1126,17 +1127,17 @@ class Ui_UpdateDialog(QtWidgets.QWidget):
         param_details.append(Ui_MainWindow.update_avail)
         param_details.append(Ui_MainWindow.use_gpg_encrypt)
         param_details.append(Ui_MainWindow.use_gpg_sign)
-        param_details.append(sss.Secondary_Functions.platform)
+        param_details.append(twotwofive.Secondary_Functions.platform)
         param_details.append(Ui_MainWindow.gpg_path)
         param_details.append(Ui_MainWindow.language)
 
-        sss.Secondary_Functions.WriteSettingsToJson(self, param_details)
+        twotwofive.Secondary_Functions.WriteSettingsToJson(self, param_details)
 
         @pyqtSlot()
         def StartUpdateProc():
             Ui_MainWindow.update_avail = False
             webbrowser.open(
-                'https://github.com/Ned84/SSS_Shamirs_Secret_Sharing/releases')
+                'https://github.com/Ned84/2plus2eq5/releases')
 
         @pyqtSlot()
         def Close_Update():
@@ -1152,7 +1153,7 @@ class Ui_UpdateDialog(QtWidgets.QWidget):
         self.cancelButton.setText(_translate("UpdateDialog", "Cancel"))
         self.updateButton.setText(_translate("UpdateDialog", "Update"))
         self.label.setText(_translate(
-            "UpdateDialog", "Shamir's Secret Sharing"))
+            "UpdateDialog", "2 + 2 = 5"))
 
         self.label3.setText(_translate(
             "UpdateDialog", "No connection to Github."))

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-*** S-S-S Shamir's Secret Sharing ***
+*** Two Plus Two Eq 5 ***
 "Easily share secrets in parts and reconstruct them again from
 an minimum amount of parts.
 Easily switch the Tor-Exit-Node Destination Country in
