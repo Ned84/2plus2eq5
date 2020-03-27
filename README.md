@@ -83,6 +83,10 @@ PYQT5 information at [this link](https://pypi.org/project/PyQt5/).
 
 ```pip install PyQt5```
 
+Python-GnuPG from [here.](https://pypi.org/project/python-gnupg/)
+
+```pip install python-gnupg```
+
 Optional Pyinstaller. Infos are [here](https://www.pyinstaller.org/downloads.html).
 
 ```pip install pyinstaller```
@@ -95,6 +99,10 @@ Newest Python from [here](https://www.python.org/downloads/).
 PYQT5 information at [this link](https://pypi.org/project/PyQt5/).
 
 ```pip3 install PyQt5```
+
+Python-GnuPG from [here.](https://pypi.org/project/python-gnupg/)
+
+```pip3 install python-gnupg```
 
 
 Optional Pyinstaller. Infos are [here](https://www.pyinstaller.org/downloads.html).
