@@ -323,7 +323,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                     self,
                     'Open file',
                     'c:\\',
-                    "Encrypted File, Text File (*.asc *.txt)")
+                    "GPG File, Zip File, 7z File, Encrypted File,"
+                    "Text File (*.gpg *.zip *.7z *.asc *.txt)")
                 if fileName[0]:
                     self.load_lineEdit.setText(fileName[0])
 
@@ -365,97 +366,117 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             try:
                 succeeded = True
                 self.statusbar.showMessage("")
-                if(self.load_lineEdit.text() != ""):
-                    if self.min_shares_spinBox.value() <=\
-                         self.total_shares_spinBox.value():
+                if self.load_lineEdit.text() != "":
+                    if self.min_shares_spinBox.value() > 1:
+                        if self.min_shares_spinBox.value() <=\
+                           self.total_shares_spinBox.value():
 
-                        if Ui_MainWindow.use_gpg_encrypt is True and\
-                           Ui_MainWindow.use_gpg_sign is True:
-                            if Ui_MainWindow.gpg_chosen_private_key !=\
-                               "No Key chosen" and\
-                                Ui_MainWindow.gpg_chosen_public_key !=\
-                               "No Key chosen":
-                                twotwofive.Secondary_Functions.\
-                                    Sign_Encrypt_File(
-                                     self, Ui_MainWindow.gpg_path,
-                                     self.load_lineEdit.text(),
-                                     Ui_MainWindow.gpg_chosen_private_key,
-                                     Ui_MainWindow.gpg_chosen_public_key)
-                            else:
-                                self.statusbar.showMessage(
-                                    "Private or public key not specified")
-                                succeeded = False
-                        else:
-
-                            if Ui_MainWindow.use_gpg_encrypt is True:
-                                if Ui_MainWindow.gpg_chosen_public_key !=\
+                            if Ui_MainWindow.use_gpg_encrypt is True and\
+                               Ui_MainWindow.use_gpg_sign is True:
+                                if Ui_MainWindow.gpg_chosen_private_key !=\
+                                   "No Key chosen" and\
+                                    Ui_MainWindow.gpg_chosen_public_key !=\
                                    "No Key chosen":
                                     twotwofive.Secondary_Functions.\
-                                        Encrypt_File(
-                                         self,
-                                         Ui_MainWindow.gpg_path,
-                                         self.load_lineEdit.text(),
-                                         Ui_MainWindow.gpg_chosen_public_key)
-                                else:
-                                    self.statusbar.showMessage(
-                                        "Public key not specified")
-                                    succeeded = False
-                            if Ui_MainWindow.use_gpg_sign is True:
-                                if Ui_MainWindow.gpg_chosen_private_key !=\
-                                   "No Key chosen":
-                                    twotwofive.Secondary_Functions.Sign_File(
-                                        self,
-                                        Ui_MainWindow.gpg_path,
+                                     Sign_Encrypt_File(
+                                        self, Ui_MainWindow.gpg_path,
                                         self.load_lineEdit.text(),
-                                        Ui_MainWindow.gpg_chosen_private_key)
+                                        Ui_MainWindow.gpg_chosen_private_key,
+                                        Ui_MainWindow.gpg_chosen_public_key)
                                 else:
                                     self.statusbar.showMessage(
-                                        "Private key not specified")
+                                        "Private or public key not specified")
                                     succeeded = False
-
-                        if succeeded is True:
-                            if Ui_MainWindow.use_gpg_encrypt is True or\
-                               Ui_MainWindow.use_gpg_sign is True:
-                                file =\
-                                    twotwofive.Secondary_Functions.Read_File(
-                                     self, self.load_lineEdit.text() + '.asc')
                             else:
-                                file =\
-                                    twotwofive.Secondary_Functions.Read_File(
-                                     self, self.load_lineEdit.text())
 
-                            shares = twotwofive.SSS_Functions.Share_Creation(
-                                self,
-                                file,
-                                self.mersenne_comboBox.currentText())
-                            path = self.load_lineEdit.text()
-                            path = path[:path.rfind('/')]
+                                if Ui_MainWindow.use_gpg_encrypt is True:
+                                    if Ui_MainWindow.gpg_chosen_public_key !=\
+                                       "No Key chosen":
+                                        twotwofive.Secondary_Functions.\
+                                         Encrypt_File(
+                                            self,
+                                            Ui_MainWindow.gpg_path,
+                                            self.load_lineEdit.text(),
+                                            Ui_MainWindow.
+                                            gpg_chosen_public_key)
+                                    else:
+                                        self.statusbar.showMessage(
+                                            "Public key not specified")
+                                        succeeded = False
+                                if Ui_MainWindow.use_gpg_sign is True:
+                                    if Ui_MainWindow.gpg_chosen_private_key !=\
+                                       "No Key chosen":
+                                        twotwofive.Secondary_Functions.\
+                                         Sign_File(
+                                            self,
+                                            Ui_MainWindow.gpg_path,
+                                            self.load_lineEdit.text(),
+                                            Ui_MainWindow.
+                                            gpg_chosen_private_key)
+                                    else:
+                                        self.statusbar.showMessage(
+                                            "Private key not specified")
+                                        succeeded = False
 
-                            if twotwofive.Secondary_Functions.Save_Shares(
-                                    self,
-                                    path,
-                                    shares,
-                                    twotwofive.SSS_Functions.security_lvl,
-                                    self.min_shares_spinBox.value(),
-                                    self.total_shares_spinBox.value()) is True:
-                                self.statusbar.showMessage(
-                                    "Shares successfully created")
-                                if twotwofive.Secondary_Functions.platform ==\
-                                   "Windows":
-                                    os.startfile(path + "/Shares")
+                            if succeeded is True:
+                                if Ui_MainWindow.use_gpg_encrypt is True or\
+                                   Ui_MainWindow.use_gpg_sign is True:
+                                    file =\
+                                        twotwofive.Secondary_Functions.\
+                                        Read_File(
+                                         self, self.load_lineEdit.text() +
+                                         '.asc')
                                 else:
-                                    subprocess.Popen(
-                                        ["xdg-open", path + "/Shares"])
+                                    file =\
+                                        twotwofive.Secondary_Functions.\
+                                        Read_File(
+                                         self, self.load_lineEdit.text())
+
+                                shares = twotwofive.SSS_Functions.\
+                                    Share_Creation(
+                                     self,
+                                     file,
+                                     self.mersenne_comboBox.currentText())
+                                path = self.load_lineEdit.text()
+                                path = path[:path.rfind('/')]
+
+                                if twotwofive.Secondary_Functions.Save_Shares(
+                                        self,
+                                        path,
+                                        shares,
+                                        twotwofive.SSS_Functions.security_lvl,
+                                        self.min_shares_spinBox.value(),
+                                        self.total_shares_spinBox.value()) is\
+                                        True:
+                                    self.statusbar.showMessage(
+                                        "Shares successfully created")
+                                    if twotwofive.Secondary_Functions.\
+                                       platform == "Windows":
+                                        os.startfile(path + "/Shares")
+                                    else:
+                                        subprocess.Popen(
+                                            ["xdg-open", path + "/Shares"])
+                                else:
+                                    self.statusbar.showMessage(
+                                        "Shares not created")
+                        else:
+                            self.statusbar.showMessage(
+                                "Min. shares have to be less than total")
+                            succeeded = False
                     else:
                         self.statusbar.showMessage(
-                            "Min. shares have to be less than total")
+                            "Min. Shares have to be more than 1")
                         succeeded = False
                 else:
                     self.statusbar.showMessage("Error: No file to load")
                     succeeded = False
 
+                if succeeded is False:
+                    self.statusbar.showMessage("Error: Shares not created")
+
             except Exception as exc:
                 twotwofive.Secondary_Functions.WriteLog(self, exc)
+                self.statusbar.showMessage("Error: Shares not created")
 
         @pyqtSlot()
         def Start_Combining_Shares():
