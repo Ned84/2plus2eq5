@@ -30,9 +30,13 @@
 
 Easily share secrets in parts and reconstruct them again from
 an minimum amount of parts.
+
 GUI Copyright (C) 2020  Ned84 ned84@protonmail.com
+
 The Shares are created using Shamir's Secret Sharing Scheme.
+
 Optional it is possible to use GPG encryption and signing.
+
 For further information on Shamirs Secret Sharing visit:
 https://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing
 
