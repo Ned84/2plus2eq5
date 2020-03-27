@@ -3,8 +3,7 @@
 *** Two Plus Two Eq 5 ***
 "Easily share secrets in parts and reconstruct them again from
 an minimum amount of parts.
-Easily switch the Tor-Exit-Node Destination Country in
-your Tor-Browser.
+
 GUI Copyright (C) 2020  Ned84 ned84@protonmail.com
 For further information visit:
 https://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing
