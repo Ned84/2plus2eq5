@@ -125,6 +125,8 @@ Optional Pyinstaller. Infos are [here](https://www.pyinstaller.org/downloads.htm
 
 ```pip install PyQt5```
 
+```pip install python-gnupg```
+
 
 Use Pyinstaller from within the twotwofive_GUI folder.
 
@@ -138,9 +140,7 @@ Use Pyinstaller from within the twotwofive_GUI folder.
 
 ```pip3 install PyQt5```
 
-```pip3 install Stem```
-
-```pip3 install tor```
+```pip3 install python-gnupg```
 
 ```pyinstaller --windowed --icon=Icon/twotwofive_wo_bg.ico --clean --name TwoTwoFive.app twotwofive_GUI.py```
 
