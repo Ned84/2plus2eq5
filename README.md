@@ -2,13 +2,17 @@
 
 * [Description](#description)
 * [Manual](#manual)
+  * [Status Bar](#status-bar)
   * [Creating Shares](#creating-shares)
   * [Combining Shares](#combining-shares)
+  * [Encryption Level](#encryption-level)
   * [GPG Presettings](#gpg-presettings)
     * [Public Key](#public-key)
     * [Signing Key](#signing-key)
+  * [Best Practice](#best-practice)
   * [Wikipedia](#wikipedia)
   * [Languages](#languages)
+  * [File Formats](#file-formats)
   * [Linux Versions](#linux-versions)
 * [Download](#download)
 * [Dependencies](#dependencies)
@@ -42,12 +46,79 @@ https://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing
 
 ## Manual
 
+### Status Bar
 
+The status bar is the bar on the botton of the GUI.
+There will be the output for diagnostic and error messages.
 
 ### Creating Shares
 
+To create shares from a file of your choice, first click on the "Create" tab and choose the file you want to split into shares with the Load button.
+
+![Load File](https://github.com/Ned84/2plus2eq5/blob/master/Screenshots/twotwofive_load_file_GUI.png)
+
+Choose the encryption level of your choice.
+If you leave it on Default, the lowest possible encryption level will be chosen.
+More information on the encryption level [here.](#encryption-level)
+
+Increase or decrease the Minimum Shares and Total Shares as you wish.
+The Total Shares are the amount of shares youll create in total.
+The Minimum Shares are the amount of shares youll need at least to reconstruct your file e.g:
+
+```If you want to split a secret into 10 parts but want to be able to reconstruct it from only 5 or more of this parts```
+```the correct input would be:```
+
+```Total shares: 10 ```
+
+```Minimum Shares: 5```
+
+When you are done choosing the above, you can start the share creation with the Start button.
+
+If you chose to use GPG it will create a .asc file in the same directory as your chosen file with the signed, encrypted or signed/encrypted data.
+More on how to enable GPG encryption/signing [here.](#gpg-presettings)
+
+After the Shares are created the status bar will show "Shares successfully created".
+
+The creation of the shares will create a folder in the same directory as your chosen file with the name "Shares".
+In it you will find the shares and a Overview.txt which contains important information on how to reconstruct the file again.
+
+**You should keep this file as safe as your shares and/or hand it out to people you want to be able to reconstruct it with their shares.**
+
+After the creation is done, the File explorer will pop up and show you the newly created folder.
+
 
 ### Combining Shares
+To combine the shares again you first need to check the Overview.txt you hopefully kept safely.
+The important information written there are the encryption level used to create the shares (which we will use to combine them again), the minimum amount of shares you need to reconstruct and finally the original file name of the splitted file.
+
+![Combine_GUI](https://github.com/Ned84/2plus2eq5/blob/master/Screenshots/twotwofive_Combine_Gui.png)
+
+First click on the "Combine" tab and choose the Minimum Shares as written in the Overview.txt.
+
+Next choose the shares for reconstruction with the Load button.
+The amount of shares have to be at least as many as the minimum shares chosen.
+
+![Load Shares](https://github.com/Ned84/2plus2eq5/blob/master/Screenshots/twotwofive_load_shares_GUI.png)
+
+As you can see youre able to (and have to) choose multiple shares at once.
+To be able to do this save all your shares in one location.
+
+Next choose the encryption level as written in the Overview.txt.
+More information on the encryption level [here.](#encryption-level)
+If you choose another encryption level or less "minimum shares" than used to create the shares, it wont be able to reconstruct the file or the file will be broken.
+
+When you are done to choose the settings as written in the Overview.txt and loaded your shares you are able to start the reconstruction with the Start button.
+
+This will create a "Combined_Shares.txt" in the directory of your previously loaded shares.
+If the reconstructed file is gpg encrypted it will create a "Combined_Shares.txt.asc".
+
+Next rename the file to the original filename written in the Overview.txt.
+
+Voilà you reconstructed your file.
+
+
+
+### Encryption Level
 
 
 ### GPG Presettings
@@ -58,11 +129,20 @@ https://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing
 
 #### Signing Key
 
+### Best Practice
+
 ### Wikipedia
 
 
 ### Languages
 * English
+
+### File Formats
+* *.gpg
+* *.zip
+* *.7z
+* *.asc
+* *.txt
 
 
 ### Linux Versions
