@@ -422,16 +422,21 @@ class Secondary_Functions(object):
         except Exception as exc:
             Secondary_Functions.WriteLog(self, exc)
 
-    def Save_Shares(self, folder, shares, sec_lvl, minimum, total):
+    def Save_Shares(
+         self, folder, shares, sec_lvl, minimum, total, filename):
         try:
             succeeded = False
             path = folder + "/Shares"
             if Secondary_Functions.platform == "Windows":
                 overview_text = "Security Level:\t" + str(sec_lvl) + "\n" +\
+                                "Orig. Filename:\t" + str(filename) +\
+                                "\n" +\
                                 "Minimum Shares:\t" + str(minimum) + "\n" +\
                                 "Total Shares:\t" + str(total)
             else:
                 overview_text = "Security Level:\t" + str(sec_lvl) + "\n" +\
+                                "Orig. Filename:\t" + str(filename) +\
+                                "\n" +\
                                 "Minimum Shares:\t" + str(minimum) + "\n" +\
                                 "Total Shares:\t\t" + str(total)
 

@@ -439,13 +439,18 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                                 path = self.load_lineEdit.text()
                                 path = path[:path.rfind('/')]
 
+                                filename = self.load_lineEdit.text()
+                                filename = filename[
+                                    filename.rfind('/') + 1:]
+
                                 if twotwofive.Secondary_Functions.Save_Shares(
                                         self,
                                         path,
                                         shares,
                                         twotwofive.SSS_Functions.security_lvl,
                                         self.min_shares_spinBox.value(),
-                                        self.total_shares_spinBox.value()) is\
+                                        self.total_shares_spinBox.value(),
+                                        filename) is\
                                         True:
                                     self.statusbar.showMessage(
                                         "Shares successfully created")
@@ -470,8 +475,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                     self.statusbar.showMessage("Error: No file to load")
                     succeeded = False
 
-                if succeeded is False:
-                    self.statusbar.showMessage("Error: Shares not created")
+                
 
             except Exception as exc:
                 twotwofive.Secondary_Functions.WriteLog(self, exc)
