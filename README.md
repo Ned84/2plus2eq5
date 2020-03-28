@@ -111,14 +111,23 @@ When you are done to choose the settings as written in the Overview.txt and load
 
 This will create a "Combined_Shares.txt" in the directory of your previously loaded shares.
 If the reconstructed file is gpg encrypted it will create a "Combined_Shares.txt.asc".
+More on how to enable GPG encryption/signing [here.](#gpg-presettings)
 
 Next rename the file to the original filename written in the Overview.txt.
 
 Voilà you reconstructed your file.
 
 
-
 ### Encryption Level
+
+The encryption level is a Mersenne primenumber wich will be chosen on the size (bitlength) file you want to split into shares.
+You are able to increase it but going lower than the minimum needed will break the splitted files.
+
+Be aware that increasing the encryption level can dramasticly add to the time it will take to create the shares.
+The time is dependent on the encryption level, the minimum shares chosen and the size of the file you want to split itself.
+If you try to split a .zip with a many files inside, with a high encryption level and a high minimum shares needed it can take very long to create the shares (even if it will finish eventually).
+
+The minimum available encryption level i chose to be 521 which should be sufficient for smaller files.
 
 
 ### GPG Presettings
