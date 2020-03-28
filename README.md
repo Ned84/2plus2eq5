@@ -7,8 +7,7 @@
   * [Combining Shares](#combining-shares)
   * [Encryption Level](#encryption-level)
   * [GPG Presettings](#gpg-presettings)
-    * [Public Key](#public-key)
-    * [Signing Key](#signing-key)
+  * [Auto Update](#auto-update)
   * [Best Practice](#best-practice)
   * [Wikipedia](#wikipedia)
   * [Languages](#languages)
@@ -86,6 +85,9 @@ In it you will find the shares and a Overview.txt which contains important infor
 
 After the creation is done, the File explorer will pop up and show you the newly created folder.
 
+Beware that files in the Share folder and if you use GPG encryption/signing any old .asc used for splitting will be overwritted/deleted.
+So if you want to split a few files after another, save the shares and overview.txt in another location after each splitting.
+
 
 ### Combining Shares
 To combine the shares again you first need to check the Overview.txt you hopefully kept safely.
@@ -125,28 +127,59 @@ You are able to increase it but going lower than the minimum needed will break t
 
 Be aware that increasing the encryption level can dramasticly add to the time it will take to create the shares.
 The time is dependent on the encryption level, the minimum shares chosen and the size of the file you want to split itself.
-If you try to split a .zip with a many files inside, with a high encryption level and a high minimum shares needed it can take very long to create the shares (even if it will finish eventually).
+
+If you try to split a .zip with many files inside, with a high encryption level and a high minimum shares needed it can take very long to create the shares (even if it will finish eventually).
 
 The minimum available encryption level i chose to be 521 which should be sufficient for smaller files.
 
 
 ### GPG Presettings
 
+It is possible to use gpg signing and encryption directly from withing this program.
+I wont go into further detail how gpg works.
+It is preinstalled on most Linux distros. For Windows etc you can get it from [here.](https://gnupg.org/)
 
-#### Public Key
+You are able to turn on encryption and/or signing in the Settings window.
+
+![General_Settings](https://github.com/Ned84/2plus2eq5/blob/master/Screenshots/twotwofive_General_Settings.png)
+
+In the GPG settings you are able to choose the location of your keyring and which keys to use.
+
+![GPG_Settings](https://github.com/Ned84/2plus2eq5/blob/master/Screenshots/twotwofive_GPG_Settings.png)
+
+The presetting for the keyring location is the default location of gnupg.
+You can change this as needed.
+Beware that if you try to open a different location for the keyring, it will only change if this location contains a pubring.kbx file,
+otherwise it will remain on the old directory.
+
+Choose the Public key for encryption and the signing key for signing.
+
+The steps of creating shares will stay the same, except if you chose GPG signing and you press the Start button, you will be prompted with the input window for the GPG password.
+Enter it for your key and it will sign the file prior encrypting and/or splitting.
 
 
-#### Signing Key
+### Auto Update
 
-### Best Practice
+If you want to be informed when a new release is online and use the update functionality enable the Auto Update in the Settings.
+Otherwise the Update window will show "No connection to Github"
+
+### Best Practices
+* Most important after each split try to reconstruct the file again right away to ensure that the information in the Overview.txt is correct and the splitting was successful. Dont split and hope that everything went correct only to find out much later that it didnt work.
+
+* If you want to split sensitive data it would be best to do so in a linux distro without internet connection. If you want to go one step further do this on a live distro on an USB.
+
+* I have to press again that i wont take any responsibility for dataloss so ensure to get comfortable with the program and the splitting and reconstruction process.
 
 ### Wikipedia
 
+If you are interessted on learning more about Shamir's Secret Sharing Scheme choose the Wikipedia button in the Help Menu.
+This will copy the wikipedia: SSSS url to your clipboard which you can open in the browser of your liking.
 
 ### Languages
 * English
 
 ### File Formats
+At the moment this fileformats you are able to split:
 * *.gpg
 * *.zip
 * *.7z
@@ -156,7 +189,7 @@ The minimum available encryption level i chose to be 521 which should be suffici
 
 ### Linux Versions
 
-OnionSwitch is tested in **Ubuntu, Debian and Fedora**.
+This program is tested in **Windows, Ubuntu, Debian and Fedora**.
 
 ## Download
 
