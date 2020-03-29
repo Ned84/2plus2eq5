@@ -112,7 +112,10 @@ If you choose another encryption level or less "minimum shares" than used to cre
 When you are done to choose the settings as written in the Overview.txt and loaded your shares you are able to start the reconstruction with the Start button.
 
 This will create a "Combined_Shares.txt" in the directory of your previously loaded shares.
+
 If the reconstructed file is gpg encrypted it will create a "Combined_Shares.txt.asc".
+In this case you need to first decrypt/verify the .asc before changing the filename to the original one.
+
 More on how to enable GPG encryption/signing [here.](#gpg-presettings)
 
 Next rename the file to the original filename written in the Overview.txt.
