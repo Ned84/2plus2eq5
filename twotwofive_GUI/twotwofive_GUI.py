@@ -38,7 +38,7 @@ from urllib import request
 from os import path
 import subprocess
 
-version = "0.1"
+version = "1.0"
 
 
 class Fonts():
@@ -127,7 +127,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
                 if stringindex != -1:
                     Ui_MainWindow.versionnew = text[stringindex +
-                                                    19:]
+                                                    19:stringindex + 22]
                     Ui_MainWindow.versionnew = \
                         Ui_MainWindow.versionnew.replace('_', '.')
 

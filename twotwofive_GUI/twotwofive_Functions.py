@@ -381,7 +381,7 @@ class Secondary_Functions(object):
             with open(filename, 'rb') as file:
                 status = gpg.encrypt_file(
                     file,
-                    recipients=[pub_key],
+                    recipients=pub_key,
                     output=filename + '.asc')
 
             print('ok: ', status.ok)
