@@ -38,6 +38,9 @@
 Easily share secrets in parts and reconstruct them again from
 an minimum amount of parts.
 
+If you ever came to the idea that you want to split, say, a password, a secret or anything alike into parts to, for example, hand them out to family members/friends, or print and hide them but you could forget the location of a view pieces, they get lost, or you want that an specific amount of said friends are able to reconstruct the secret, you can use this program to choose a minimum amount of pieces from a total with which youre able to get your secret back.
+Even more its possible to GPG encrypt/sign it directly from within.
+
 GUI Copyright (C) 2020  Ned84 ned84@protonmail.com
 
 The Shares are created using Shamir's Secret Sharing Scheme.
