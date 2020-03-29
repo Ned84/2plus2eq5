@@ -1,5 +1,9 @@
 # 2 plus 2 Equals 5
 
+[![GitHub license](https://img.shields.io/github/license/Ned84/2plus2eq5?color=blue&style=plastic)](https://github.com/Ned84/2plus2eq5/blob/master/LICENSE)
+[![GitHub issues](https://img.shields.io/github/issues/Ned84/2plus2eq5?style=plastic)](https://github.com/Ned84/2plus2eq5/issues)
+
+
 * [Description](#description)
 * [Manual](#manual)
   * [Status Bar](#status-bar)
@@ -112,7 +116,10 @@ If you choose another encryption level or less "minimum shares" than used to cre
 When you are done to choose the settings as written in the Overview.txt and loaded your shares you are able to start the reconstruction with the Start button.
 
 This will create a "Combined_Shares.txt" in the directory of your previously loaded shares.
+
 If the reconstructed file is gpg encrypted it will create a "Combined_Shares.txt.asc".
+In this case you need to first decrypt/verify the .asc before changing the filename to the original one.
+
 More on how to enable GPG encryption/signing [here.](#gpg-presettings)
 
 Next rename the file to the original filename written in the Overview.txt.
@@ -189,7 +196,7 @@ At the moment this fileformats you are able to split:
 
 ### Linux Versions
 
-This program is tested in **Windows, Ubuntu, Debian and Fedora**.
+This program is tested in **Windows, Ubuntu, Tails, Debian and Fedora**.
 
 ## Download
 
