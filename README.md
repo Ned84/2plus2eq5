@@ -192,7 +192,7 @@ At the moment this fileformats you are able to split:
 
 ### Linux Versions
 
-This program is tested in **Windows, Ubuntu, Debian and Fedora**.
+This program is tested in **Windows, Ubuntu, Tails, Debian and Fedora**.
 
 ## Download
 
