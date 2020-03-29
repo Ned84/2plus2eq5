@@ -20,9 +20,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-# from __future__ import division
-# from __future__ import print_function
-
 import random
 import functools
 import datetime
@@ -43,8 +40,7 @@ class SSS_Functions(object):
     prime = 0
     security_lvl = 0
 
-    prime_array = [127,
-                   521,
+    prime_array = [521,
                    607,
                    1279,
                    2203,
@@ -179,8 +175,8 @@ class SSS_Functions(object):
 
         for number in SSS_Functions.prime_array:
             if secret_int.bit_length() < number:
-                if number < 127:
-                    SSS_Functions.security_lvl = 127
+                if number < 521:
+                    SSS_Functions.security_lvl = 521
                     SSS_Functions.prime = 2 ** SSS_Functions.security_lvl - 1
                     break
                 else:
