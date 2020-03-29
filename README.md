@@ -1,5 +1,9 @@
 # 2 plus 2 Equals 5
 
+[![GitHub license](https://img.shields.io/github/license/Ned84/2plus2eq5?color=blue&style=plastic)](https://github.com/Ned84/2plus2eq5/blob/master/LICENSE)
+[![GitHub issues](https://img.shields.io/github/issues/Ned84/2plus2eq5?style=plastic)](https://github.com/Ned84/2plus2eq5/issues)
+
+
 * [Description](#description)
 * [Manual](#manual)
   * [Status Bar](#status-bar)
