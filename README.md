@@ -54,7 +54,7 @@ https://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing
 
 ### Status Bar
 
-The status bar is the bar on the botton of the GUI.
+The status bar is the bar on the bottom of the GUI.
 There will be the output for diagnostic and error messages.
 
 ### Creating Shares
